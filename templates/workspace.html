@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+
+{% block title %}{{ project.title }} Workspace - UniCollab{% endblock %}
+{% block page_title %}Active Operation Space{% endblock %}
+
+{% block content %}
+<div class="max-w-[1400px] mx-auto space-y-8">
+
+    <!-- Workspace Header -->
+    <div
+        class="glass-panel p-6 sm:p-8 rounded-2xl relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div class="absolute -top-20 -left-20 w-64 h-64 bg-indigo-500/10 blur-[60px] rounded-full pointer-events-none">
+        </div>
+
+        <div class="relative z-10 w-full md:w-auto flex-grow">
+            <span
+                class="block text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-2 flex items-center gap-2">
+                <span class="relative flex h-2 w-2">
+                    <span
+                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+                </span>
+                Active Mission Control
+            </span>
+            <h1 class="text-3xl font-bold text-white mb-4 leading-tight truncate" title="{{ project.title }}">{{
+                project.title }}</h1>
+
+            <div class="flex flex-wrap gap-2 items-center">
+                <span class="text-xs text-slate-500 font-mono mr-2">Operative Roster:</span>
+                {% for name in team_names %}
+                <span
+                    class="px-2.5 py-1 rounded-md text-[10px] bg-slate-800 text-slate-300 border border-slate-700 font-bold tracking-wide flex items-center gap-1.5">
+                    <div class="w-1.5 h-1.5 rounded-full bg-cyan-500/50"></div>
+                    {{ name }}
+                </span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="relative z-10 shrink-0 mt-4 md:mt-0 lg:self-start">
+            <a href="/projects"
+                class="btn-outline px-6 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 uppercase tracking-widest text-slate-400 hover:text-white border-slate-700 hover:border-slate-500">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Return to Directory
+            </a>
+        </div>
+    </div>
+
+    <!-- Task Initialization Form -->
+    <div
+        class="glass-panel p-4 rounded-xl relative z-10 overflow-hidden border border-cyan-500/20 shadow-[0_4px_20px_-5px_rgba(34,211,238,0.1)]">
+        <form action="/workspace/{{ project.id }}/add-task" method="POST"
+            class="flex flex-col sm:flex-row gap-4 items-center m-0">
+            <div class="w-full flex-grow relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                </div>
+                <input type="text" name="title"
+                    class="cyber-input w-full pl-10 pr-4 py-3 rounded-lg text-sm font-mono placeholder:text-slate-600 text-white bg-slate-900/50 border-slate-700 focus:border-cyan-500/50"
+                    placeholder="Initialize new objective parameter..." required>
+            </div>
+            <button type="submit"
+                class="w-full sm:w-auto shrink-0 btn-primary px-8 py-3 rounded-lg font-bold tracking-wide flex items-center justify-center gap-2 shadow-[0_0_10px_rgba(34,211,238,0.3)]">
+                Compile Objective
+            </button>
+        </form>
+    </div>
+
+    <!-- Kanban Matrix -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+
+        <!-- ////////////////// TO DO COLUMN ////////////////// -->
+        <div class="glass-panel p-5 rounded-2xl flex flex-col min-h-[500px] border-t-2 border-t-slate-600 relative">
+            <div class="flex justify-between items-center mb-6 pb-4 border-b border-white/5">
+                <h3 class="text-sm font-bold text-white uppercase tracking-widest flex items-center gap-2">
+                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                        </path>
+                    </svg>
+                    To Do
+                </h3>
+                <span
+                    class="bg-slate-800 text-slate-400 text-[10px] font-bold px-2 py-0.5 rounded border border-slate-700 shadow-inner">{{
+                    todo|length }}</span>
+            </div>
+
+            <div class="flex-grow space-y-3 custom-scrollbar overflow-y-auto pr-1">
+                {% for task in todo %}
+                <div
+                    class="bg-slate-800/80 border border-slate-700/80 hover:border-slate-500/80 rounded-xl p-4 transition-all duration-200 group relative overflow-hidden pl-3 border-l-[3px] border-l-slate-400">
+                    <p class="text-sm text-slate-200 font-medium mb-4 leading-snug pr-2">{{ task.title }}</p>
+                    <div class="flex justify-end pt-3 border-t border-slate-700/50">
+                        <form action="/workspace/{{ project.id }}/update-task" method="POST" class="m-0">
+                            <input type="hidden" name="task_id" value="{{ task.id }}">
+                            <input type="hidden" name="status" value="in_progress">
+                            <button type="submit"
+                                class="px-3 py-1.5 rounded-md bg-slate-900 border border-slate-700 hover:border-cyan-500 hover:text-cyan-400 text-slate-400 text-[10px] font-bold uppercase tracking-wider transition-colors flex items-center gap-1 shadow-inner group/btn">
+                                Execute <svg class="w-3 h-3 group-hover/btn:translate-x-0.5 transition-transform"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+
+                {% if todo|length == 0 %}
+                <div class="h-full flex flex-col items-center justify-center p-6 text-center opacity-50">
+                    <svg class="w-8 h-8 text-slate-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                    </svg>
+                    <span class="text-[10px] text-slate-500 uppercase font-bold tracking-widest block">No Pending
+                        Operations</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- ////////////////// IN PROGRESS COLUMN ////////////////// -->
+        <div class="glass-panel p-5 rounded-2xl flex flex-col min-h-[500px] border-t-2 border-t-yellow-500/80 relative">
+
+            <div
+                class="absolute top-0 right-1/2 translate-x-1/2 w-48 h-8 bg-yellow-500/20 blur-[20px] rounded-full pointer-events-none">
+            </div>
+
+            <div class="flex justify-between items-center mb-6 pb-4 border-b border-white/5 relative z-10">
+                <h3 class="text-sm font-bold text-white uppercase tracking-widest flex items-center gap-2">
+                    <svg class="w-4 h-4 text-yellow-400 animate-pulse" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+                        </path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    In Progress
+                </h3>
+                <span
+                    class="bg-yellow-500/10 text-yellow-400 text-[10px] font-bold px-2 py-0.5 rounded border border-yellow-500/20 shadow-inner">{{
+                    in_progress|length }}</span>
+            </div>
+
+            <div class="flex-grow space-y-3 custom-scrollbar overflow-y-auto pr-1">
+                {% for task in in_progress %}
+                <div
+                    class="bg-slate-800/80 border border-yellow-500/30 hover:border-yellow-500/70 rounded-xl p-4 transition-all duration-200 group relative overflow-hidden pl-3 border-l-[3px] border-l-yellow-400 shadow-[0_4px_15px_-5px_rgba(234,179,8,0.1)]">
+                    <p class="text-sm text-yellow-50 font-medium mb-4 leading-snug pr-2">{{ task.title }}</p>
+
+                    <div class="flex justify-between items-center pt-3 border-t border-slate-700/50">
+                        <form action="/workspace/{{ project.id }}/update-task" method="POST" class="m-0">
+                            <input type="hidden" name="task_id" value="{{ task.id }}">
+                            <input type="hidden" name="status" value="todo">
+                            <button type="submit"
+                                class="p-1.5 rounded bg-slate-900 border border-slate-700 hover:border-slate-500 hover:text-white text-slate-500 transition-colors shadow-inner group/btn"
+                                title="Halt Processing">
+                                <svg class="w-4 h-4 group-hover/btn:-translate-x-0.5 transition-transform" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                            </button>
+                        </form>
+
+                        <form action="/workspace/{{ project.id }}/update-task" method="POST" class="m-0">
+                            <input type="hidden" name="task_id" value="{{ task.id }}">
+                            <input type="hidden" name="status" value="completed">
+                            <button type="submit"
+                                class="px-3 py-1.5 rounded-md bg-green-500/10 border border-green-500/30 hover:bg-green-500 hover:text-slate-900 text-green-400 text-[10px] font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-1 shadow-inner group/btn shadow-[0_0_10px_rgba(34,197,94,0.2)] hover:shadow-[0_0_15px_rgba(34,197,94,0.5)]">
+                                Finalize <svg class="w-3 h-3 group-hover/btn:translate-x-0.5 transition-transform"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+
+                {% if in_progress|length == 0 %}
+                <div class="h-full flex flex-col items-center justify-center p-6 text-center opacity-50">
+                    <svg class="w-8 h-8 text-yellow-600/50 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5l7 7-7 7">
+                        </path>
+                    </svg>
+                    <span class="text-[10px] text-slate-500 uppercase font-bold tracking-widest block">System
+                        Idle</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- ////////////////// COMPLETED COLUMN ////////////////// -->
+        <div class="glass-panel p-5 rounded-2xl flex flex-col min-h-[500px] border-t-2 border-t-green-500/80 relative">
+            <div class="flex justify-between items-center mb-6 pb-4 border-b border-white/5">
+                <h3 class="text-sm font-bold text-white uppercase tracking-widest flex items-center gap-2">
+                    <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Completed
+                </h3>
+                <span
+                    class="bg-green-500/10 text-green-400 text-[10px] font-bold px-2 py-0.5 rounded border border-green-500/20 shadow-inner">{{
+                    completed|length }}</span>
+            </div>
+
+            <div class="flex-grow space-y-3 custom-scrollbar overflow-y-auto pr-1">
+                {% for task in completed %}
+                <div
+                    class="bg-slate-900/40 border border-green-500/20 rounded-xl p-4 transition-all duration-200 relative overflow-hidden pl-3 border-l-[3px] border-l-green-500/50 opacity-80 hover:opacity-100">
+                    <p
+                        class="text-sm text-slate-400 font-medium mb-4 leading-snug pr-2 line-through decoration-slate-500/50">
+                        {{ task.title }}</p>
+
+                    <div class="flex justify-start pt-3 border-t border-slate-700/50">
+                        <form action="/workspace/{{ project.id }}/update-task" method="POST" class="m-0">
+                            <input type="hidden" name="task_id" value="{{ task.id }}">
+                            <input type="hidden" name="status" value="in_progress">
+                            <button type="submit"
+                                class="px-2 py-1 rounded bg-slate-900 border border-slate-700 hover:border-slate-500 hover:text-white text-slate-500 text-[9px] font-bold uppercase tracking-wider transition-colors shadow-inner flex items-center gap-1 group/btn"
+                                title="Re-initialize Task">
+                                <svg class="w-3 h-3 group-hover/btn:-rotate-90 transition-transform" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                                    </path>
+                                </svg>
+                                Rerun
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+
+                {% if completed|length == 0 %}
+                <div class="h-full flex flex-col items-center justify-center p-6 text-center opacity-40">
+                    <svg class="w-8 h-8 text-green-600/50 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    <span class="text-[10px] text-slate-500 uppercase font-bold tracking-widest block">Archive
+                        Empty</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

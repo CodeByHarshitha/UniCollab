@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block title %}Initialize Project - UniCollab{% endblock %}
+{% block page_title %}Operation Planning{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto flex flex-col lg:flex-row gap-8 items-start">
+
+    <!-- Main Form Panel -->
+    <div class="glass-panel p-8 sm:p-10 rounded-2xl flex-grow w-full relative overflow-hidden">
+        <div class="absolute -top-20 -left-20 w-64 h-64 bg-indigo-500/10 blur-[60px] rounded-full pointer-events-none">
+        </div>
+
+        <div class="relative z-10 mb-8 border-b border-slate-700/50 pb-6 border-dashed">
+            <h2 class="text-3xl font-bold text-white mb-2 flex items-center gap-3">
+                <svg class="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                    </path>
+                </svg>
+                Establish Database
+            </h2>
+            <p class="text-slate-400 text-sm">Define operational parameters, outline required competencies, and secure
+                network resources.</p>
+        </div>
+
+        <form action="/create-project" method="POST" class="relative z-10 space-y-8">
+
+            <!-- Project Title -->
+            <div>
+                <label for="title"
+                    class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Operation
+                    Codename</label>
+                <input type="text" id="title" name="title"
+                    class="cyber-input w-full px-4 py-3 rounded-lg bg-slate-900/50 border border-slate-700 text-white placeholder:text-slate-600 focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all font-mono"
+                    placeholder="e.g. PROJECT_NEXUS" required>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <!-- Project Type -->
+                <div>
+                    <label for="type"
+                        class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Classification</label>
+                    <div class="relative">
+                        <select id="type" name="type"
+                            class="cyber-input w-full px-4 py-3 rounded-lg bg-slate-900/50 border border-slate-700 text-white appearance-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all cursor-pointer font-mono text-sm"
+                            required>
+                            <option value="" disabled selected class="bg-slate-900 text-slate-500">Select Type</option>
+                            <option value="Hackathon" class="bg-slate-900">Hackathon</option>
+                            <option value="Startup Idea" class="bg-slate-900">Startup Idea</option>
+                            <option value="Research Project" class="bg-slate-900">Research Project</option>
+                            <option value="Course Project" class="bg-slate-900">Course Project</option>
+                            <option value="Open Source Contribution" class="bg-slate-900">Open Source Contribution
+                            </option>
+                        </select>
+                        <div
+                            class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Size -->
+                <div>
+                    <label for="team_size"
+                        class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Capacity
+                        Limit</label>
+                    <div class="relative">
+                        <select id="team_size" name="team_size"
+                            class="cyber-input w-full px-4 py-3 rounded-lg bg-slate-900/50 border border-slate-700 text-white appearance-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all cursor-pointer font-mono text-sm"
+                            required>
+                            <option value="2" class="bg-slate-900">2 Operatives</option>
+                            <option value="3" class="bg-slate-900">3 Operatives</option>
+                            <option value="4" selected class="bg-slate-900">4 Operatives</option>
+                            <option value="5" class="bg-slate-900">5 Operatives</option>
+                            <option value="6" class="bg-slate-900">6 Operatives</option>
+                        </select>
+                        <div
+                            class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Required Skills Grid -->
+            <div>
+                <label
+                    class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                    Required Competencies
+                    <span
+                        class="px-2 py-0.5 rounded text-[9px] bg-slate-800 text-slate-400 border border-slate-700">Multi-Select</span>
+                </label>
+
+                <div
+                    class="bg-slate-900/50 border border-slate-700 rounded-xl p-4 max-h-[280px] overflow-y-auto custom-scrollbar shadow-inner">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {% for category, skill_list in skills.items() %}
+                        {% for skill in skill_list %}
+                        <label
+                            class="relative flex items-center p-3 rounded-lg border border-slate-700/50 bg-slate-800/30 cursor-pointer hover:bg-slate-700/50 transition-colors group">
+                            <input type="checkbox" name="skills" value="{{ skill }}"
+                                class="peer w-4 h-4 bg-slate-900 border-slate-600 rounded text-cyan-500 focus:ring-cyan-500/30 focus:ring-offset-slate-900 bg-transparent cursor-pointer">
+                            <span
+                                class="ml-3 text-sm font-medium text-slate-300 peer-checked:text-cyan-400 transition-colors">{{
+                                skill }}</span>
+                            <div
+                                class="absolute inset-0 border border-cyan-500/0 peer-checked:border-cyan-500/30 rounded-lg peer-checked:bg-cyan-500/5 transition-all pointer-events-none">
+                            </div>
+                        </label>
+                        {% endfor %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project Description -->
+            <div>
+                <label for="description"
+                    class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Mission
+                    Briefing</label>
+                <textarea id="description" name="description"
+                    class="cyber-input w-full px-4 py-3 rounded-lg bg-slate-900/50 border border-slate-700 text-slate-300 placeholder:text-slate-600 focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all font-mono min-h-[160px] resize-y"
+                    placeholder="Detail operational objectives, expected outcomes, and technical requirements..."
+                    required></textarea>
+            </div>
+
+            <!-- Actions -->
+            <div class="pt-6 border-t border-slate-700/50 flex flex-col sm:flex-row justify-end items-center gap-4">
+                <a href="/projects"
+                    class="text-sm font-bold text-slate-500 hover:text-white uppercase tracking-wider transition-colors">Abort
+                    Setup</a>
+                <button type="submit"
+                    class="w-full sm:w-auto btn-primary px-8 py-3 rounded-xl font-bold tracking-wide flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(99,102,241,0.3)]">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                    Initialize Project
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+    <!-- Smart Team Builder Sidebar -->
+    <div class="w-full lg:w-80 shrink-0">
+        <div class="glass-panel rounded-2xl p-6 sticky top-24 border border-cyan-500/20 relative overflow-hidden">
+            <!-- Sidebar Background Glow -->
+            <div class="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 blur-[40px] rounded-full pointer-events-none">
+            </div>
+
+            <div class="relative z-10">
+                <div class="flex items-center gap-3 mb-4">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 p-[1px] shadow-[0_0_10px_rgba(34,211,238,0.3)]">
+                        <div class="w-full h-full bg-slate-900 rounded-[10px] flex items-center justify-center">
+                            <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                                </path>
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="text-lg font-bold text-white leading-tight">Match<br>Engine</h3>
+                </div>
+
+                <p class="text-xs text-slate-400 mb-6 pb-6 border-b border-white/5 border-dashed">The system requires
+                    active competencies to calculate compatibility matrices.</p>
+
+                {% if suggestions|length == 0 %}
+                <div class="bg-slate-900/50 rounded-xl border border-slate-800 border-dashed p-6 text-center">
+                    <svg class="w-8 h-8 text-slate-600 mx-auto mb-3 opacity-50 block" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                        </path>
+                    </svg>
+                    <span class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Insufficient
+                        Data</span>
+                    <span class="text-xs text-slate-400 font-mono">Calibrate Identity parameters to activate
+                        scanning.</span>
+                </div>
+                {% else %}
+                <div class="space-y-4">
+                    {% for sugg in suggestions %}
+                    <div
+                        class="bg-slate-800/40 border border-slate-700 rounded-xl p-4 hover:border-cyan-500/30 transition-colors group">
+
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="font-bold text-white text-sm group-hover:text-cyan-400 transition-colors truncate max-w-[120px]"
+                                title="{{ sugg.name }}">{{ sugg.name }}</div>
+                            <div
+                                class="px-2 py-0.5 rounded text-[10px] font-bold text-cyan-300 bg-cyan-500/10 border border-cyan-500/20 whitespace-nowrap">
+                                {{ sugg.score }}% SYNC</div>
+                        </div>
+
+                        <div class="text-[10px] text-slate-500 font-mono mb-3">
+                            <span class="block text-slate-600 mb-1">Intersecting Node:</span>
+                            <strong class="text-indigo-400 break-words">
+                                {% if sugg.overlapping_skills %}
+                                {{ sugg.overlapping_skills[0] }}
+                                {% elif sugg.overlapping_interests %}
+                                {{ sugg.overlapping_interests[0] }}
+                                {% else %}
+                                Unknown Sector
+                                {% endif %}
+                            </strong>
+                        </div>
+
+                        <a href="/discover"
+                            class="block w-full py-1.5 text-center rounded border border-slate-600 hover:border-slate-400 text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-white transition-colors bg-slate-900/50">Trace
+                            Profile</a>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

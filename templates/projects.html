@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Projects - UniCollab{% endblock %}
+{% block page_title %}Active Operations{% endblock %}
+
+{% block content %}
+{% from 'components/card.html' import card %}
+{% from 'components/skill_tag.html' import skill_tag %}
+{% from 'components/button.html' import btn_primary, btn_secondary %}
+
+<div class="max-w-6xl mx-auto space-y-8">
+
+    <!-- Header Section & Search -->
+    <div
+        class="glass-panel p-6 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden text-center md:text-left">
+        <div
+            class="absolute -left-20 -bottom-20 w-64 h-64 bg-indigo-500/10 blur-[60px] rounded-full pointer-events-none">
+        </div>
+
+        <div class="relative z-10 flex-1 w-full max-w-md">
+            <h2 class="text-2xl font-bold text-white mb-4">Campus Initiatives</h2>
+            <div class="relative group">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-slate-500 group-focus-within:text-indigo-400 transition-colors" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+                <input type="text" id="searchInput"
+                    class="cyber-input w-full pl-11 pr-4 py-2.5 rounded-xl text-sm placeholder-slate-500"
+                    placeholder="Search operations by title or skill...">
+            </div>
+        </div>
+
+        <div class="relative z-10 shrink-0">
+            {{ btn_primary('Initialize Operation', href='/create-project', icon='<svg
+                class="w-4 h-4 group-hover:rotate-90 transition-transform duration-300" fill="none"
+                stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>', class='shadow-[0_0_15px_rgba(99,102,241,0.3)]') }}
+        </div>
+    </div>
+
+    <!-- Projects Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="cardGrid">
+
+        {% if projects|length == 0 %}
+        <div
+            class="col-span-1 lg:col-span-2 xl:col-span-3 glass-panel p-12 rounded-2xl text-center flex flex-col items-center justify-center min-h-[300px]">
+            <div
+                class="w-16 h-16 rounded-full bg-slate-800/50 border border-slate-700 flex items-center justify-center mb-4">
+                <svg class="w-8 h-8 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                    </path>
+                </svg>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">No Active Databases Found</h3>
+            <p class="text-slate-400 max-w-md">The project directory is currently empty. Be the first to establish a new
+                operational node.</p>
+            {{ btn_secondary('Create Database', href='/create-project', class='mt-6') }}
+        </div>
+        {% endif %}
+
+        {% for proj in projects %}
+        <div class="card-item"
+            data-search="{{ proj.title | lower }} {{ proj.skills | join(' ') | lower }} {{ proj.type | lower }}">
+
+            {% set items_array = [
+            {'label': 'Lead Coordinator', 'values': [proj.creator_name.split()[0] if proj.creator_name else "Unknown"]}
+            ] %}
+
+            {% set action_form %}
+            {% if proj.members|length >= proj.team_size %}
+            <button disabled
+                class="w-full py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-500 font-bold uppercase tracking-widest text-xs cursor-not-allowed flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+                    </path>
+                </svg>
+                Capacity Reached ({{ proj.members|length }}/{{ proj.team_size }})
+            </button>
+            {% elif email in proj.members %}
+            <button disabled
+                class="w-full py-2.5 rounded-lg bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 font-bold uppercase tracking-widest text-xs cursor-not-allowed flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Active Member ({{ proj.members|length }}/{{ proj.team_size }})
+            </button>
+            {% else %}
+            <form action="/request-project-join" method="POST">
+                <input type="hidden" name="project_id" value="{{ proj.id }}">
+                {{ btn_primary('Join Project (' ~ proj.members|length ~ '/' ~ proj.team_size ~ ')', type='submit',
+                icon='<svg class="w-4 h-4 group-hover/join:translate-x-1 transition-transform" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1">
+                    </path>
+                </svg>', class='w-full text-xs uppercase tracking-widest bg-slate-800 hover:bg-cyan-500
+                border-slate-600') }}
+            </form>
+            {% endif %}
+            {% endset %}
+
+            {{ card(title=proj.title, subtitle=(proj.description | truncate(100)), badge=proj.type, skills=proj.skills,
+            items=items_array, members=proj.member_names, button_macro=action_form) }}
+        </div>
+        {% endfor %}
+
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('searchInput');
+        const cards = document.querySelectorAll('.card-item');
+
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                cards.forEach(card => {
+                    const searchData = card.getAttribute('data-search');
+                    if (searchData.includes(term)) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

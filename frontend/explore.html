@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discover | UniCollab.</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+
+<body class="bg-[#020617] text-white min-h-screen">
+
+    <nav class="navbar relative z-50">
+        <a href="dashboard.html" class="nav-brand flex items-center gap-2">
+            <img src="static/images/logo.svg" alt="logo" class="w-6 h-6"> UniCollab.
+        </a>
+        <div class="nav-links">
+            <a href="dashboard.html" class="nav-link" style="margin-right: 15px;">Dashboard</a>
+            <a href="explore.html" class="nav-link"
+                style="font-weight:600; color:#22d3ee; margin-right: 15px;">Discover</a>
+        </div>
+        <div class="nav-user flex items-center gap-4">
+            <span id="nav-user-name" class="text-sm font-medium text-slate-300"></span>
+            <button onclick="API.logout()"
+                class="text-xs text-red-400 hover:text-red-300 transition-colors uppercase tracking-widest font-bold">Log
+                Off</button>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto p-4 md:p-8 mt-6">
+        <div class="mb-10 text-center">
+            <h1 class="text-4xl font-bold text-white tracking-tight mb-3">Discover Collaborators</h1>
+            <p class="text-slate-400">Match with peers based on overlapping tech stacks and objectives.</p>
+        </div>
+
+        <div id="loading" class="text-center py-20 text-slate-500 font-mono animate-pulse">Scanning the network...</div>
+
+        <div id="collaborator-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
+            <!-- Populated by JS -->
+        </div>
+
+        <div id="no-results" class="hidden text-center py-20 bg-white/5 rounded-2xl border border-white/10">
+            <p class="text-slate-400 font-medium">No matching operatives found in the database.</p>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        enforceAuth();
+        document.getElementById('nav-user-name').innerText = API.getUser().name;
+
+        async function loadDiscover() {
+            try {
+                const results = await API.getDiscoverFeed();
+                const grid = document.getElementById('collaborator-grid');
+                const loading = document.getElementById('loading');
+                const noResults = document.getElementById('no-results');
+
+                loading.classList.add('hidden');
+
+                if (!results || results.length === 0) {
+                    noResults.classList.remove('hidden');
+                    return;
+                }
+
+                grid.innerHTML = '';
+                results.forEach(match => {
+                    const user = match.user;
+                    const score = match.score;
+                    const skillsHtml = user.profile_data.skills.map(skill =>
+                        `<span class="px-2 py-0.5 rounded text-[10px] bg-slate-800 border border-slate-700 text-slate-400 font-mono">${skill}</span>`
+                    ).join('');
+
+                    const card = `
+                        <div class="glass-panel p-6 rounded-2xl border-t border-t-white/10 hover:-translate-y-1 transition-transform duration-300 shadow-lg group relative overflow-hidden">
+                            <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            
+                            <div class="flex justify-between items-start mb-4 relative z-10">
+                                <div>
+                                    <h3 class="text-lg font-bold text-white group-hover:text-cyan-400 transition-colors">${user.name}</h3>
+                                    <p class="text-xs text-slate-500 font-mono uppercase tracking-wider">${user.profile_data.department}</p>
+                                </div>
+                                <div class="px-2 py-1 bg-cyan-500/10 border border-cyan-500/20 rounded-md text-xs font-bold text-cyan-400">
+                                    Score: ${score}
+                                </div>
+                            </div>
+
+                            <div class="mb-6 relative z-10">
+                                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Capabilities</p>
+                                <div class="flex flex-wrap gap-1.5">
+                                    ${skillsHtml}
+                                </div>
+                            </div>
+
+                            <button onclick="alert('Invite sent to ${user.name} (Simulation)')" class="btn-secondary w-full py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest group-hover:bg-cyan-500/10 group-hover:text-cyan-400 group-hover:border-cyan-500/30 transition-all flex items-center justify-center gap-2 relative z-10">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                Invite to Collaborate
+                            </button>
+                        </div>
+                    `;
+                    grid.innerHTML += card;
+                });
+                grid.classList.remove('hidden');
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById('loading').innerText = "Failed to load network data.";
+            }
+        }
+
+        loadDiscover();
+    </script>
+</body>
+
+</html>

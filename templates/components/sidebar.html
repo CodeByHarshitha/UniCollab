@@ -1,0 +1,120 @@
+<aside
+    class="w-64 bg-surface/50 backdrop-blur-xl border-r border-white/5 flex flex-col justify-between hidden md:flex shrink-0 z-20">
+
+    <!-- Brand -->
+    <div class="h-16 flex items-center px-6 border-b border-white/5">
+        <div class="flex items-center gap-3">
+            <img src="/static/images/logo.svg" alt="UniCollab Logo"
+                class="w-8 h-8 drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]">
+            <span class="text-xl font-bold tracking-tight text-white/90">UniCollab.</span>
+        </div>
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav class="flex-1 py-6 px-3 flex flex-col gap-1 overflow-y-auto">
+        <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Platform</p>
+
+        <a href="/dashboard"
+            class="nav-item {% if active_page == 'dashboard' %}active{% endif %} flex items-center gap-3 px-3 py-2.5 rounded-r-lg text-slate-300 hover:text-white group">
+            <svg class="w-5 h-5 text-slate-400 group-hover:text-indigo-400 transition-colors" fill="none"
+                stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                </path>
+            </svg>
+            <span class="font-medium text-sm">Dashboard</span>
+        </a>
+
+        <a href="/discover"
+            class="nav-item {% if active_page == 'discover' %}active{% endif %} flex items-center gap-3 px-3 py-2.5 rounded-r-lg text-slate-300 hover:text-white group">
+            <svg class="w-5 h-5 text-slate-400 group-hover:text-cyan-400 transition-colors" fill="none"
+                stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <span class="font-medium text-sm">Discover</span>
+        </a>
+
+        <a href="/projects"
+            class="nav-item {% if active_page == 'projects' %}active{% endif %} flex items-center gap-3 px-3 py-2.5 rounded-r-lg text-slate-300 hover:text-white group">
+            <svg class="w-5 h-5 text-slate-400 group-hover:text-purple-400 transition-colors" fill="none"
+                stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                </path>
+            </svg>
+            <span class="font-medium text-sm">Projects</span>
+        </a>
+
+        <a href="/ideas"
+            class="nav-item {% if active_page == 'ideas' %}active{% endif %} flex items-center gap-3 px-3 py-2.5 rounded-r-lg text-slate-300 hover:text-white group">
+            <svg class="w-5 h-5 text-slate-400 group-hover:text-yellow-400 transition-colors" fill="none"
+                stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
+                </path>
+            </svg>
+            <span class="font-medium text-sm">Ideas</span>
+        </a>
+
+        <a href="/projects"
+            class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-r-lg text-slate-300 hover:text-white group">
+            <svg class="w-5 h-5 text-slate-400 group-hover:text-teal-400 transition-colors" fill="none"
+                stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z">
+                </path>
+            </svg>
+            <span class="font-medium text-sm">Workspace</span>
+        </a>
+
+        <div class="mt-4 mb-2">
+            <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Network</p>
+        </div>
+
+        <a href="/matches"
+            class="nav-item {% if active_page == 'matches' %}active{% endif %} flex items-center justify-between px-3 py-2.5 rounded-r-lg text-slate-300 hover:text-white group">
+            <div class="flex items-center gap-3">
+                <svg class="w-5 h-5 text-slate-400 group-hover:text-green-400 transition-colors" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5">
+                    </path>
+                </svg>
+                <span class="font-medium text-sm">Matches</span>
+            </div>
+        </a>
+
+        <a href="/requests"
+            class="nav-item {% if active_page == 'requests' %}active{% endif %} flex items-center gap-3 px-3 py-2.5 rounded-r-lg text-slate-300 hover:text-white group">
+            <svg class="w-5 h-5 text-slate-400 group-hover:text-pink-400 transition-colors" fill="none"
+                stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4">
+                </path>
+            </svg>
+            <span class="font-medium text-sm">Requests</span>
+        </a>
+
+    </nav>
+
+    <!-- User Profile Minimal -->
+    <div class="p-4 border-t border-white/5 bg-slate-900/30">
+        <div class="flex items-center gap-3 mb-4">
+            <div
+                class="w-9 h-9 rounded-full bg-gradient-to-tr from-indigo-500 to-cyan-400 flex items-center justify-center text-sm font-bold text-white shadow-neon">
+                {{ email[0] | upper }}
+            </div>
+            <div class="flex-1 overflow-hidden">
+                <p class="text-sm font-medium text-white truncate">{{ email.split('@')[0] }}</p>
+                <p class="text-xs text-slate-400 truncate font-mono">Student</p>
+            </div>
+        </div>
+        <div class="flex gap-2">
+            <a href="/profile"
+                class="flex-1 text-center py-1.5 px-2 bg-white/5 hover:bg-white/10 text-xs font-medium text-slate-300 rounded border border-white/5 transition-colors">Profile</a>
+            <a href="/logout"
+                class="flex-1 text-center py-1.5 px-2 bg-red-500/10 hover:bg-red-500/20 text-xs font-medium text-red-400 rounded border border-red-500/20 transition-colors">Logout</a>
+        </div>
+    </div>
+</aside>

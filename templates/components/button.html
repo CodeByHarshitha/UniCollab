@@ -1,0 +1,34 @@
+{% macro btn_primary(text, type="button", icon=None, class="") %}
+<button type="{{ type }}"
+    class="btn-primary {{ class }} px-6 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2">
+    {% if icon %}{{ icon | safe }}{% endif %}{{ text }}
+</button>
+{% endmacro %}
+
+{% macro btn_primary_link(text, href, icon=None, class="") %}
+<a href="{{ href }}"
+    class="btn-primary {{ class }} px-6 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 w-full sm:w-auto text-center">
+    {% if icon %}{{ icon | safe }}{% endif %}{{ text }}
+</a>
+{% endmacro %}
+
+{% macro btn_secondary(text, type="button", icon=None, class="") %}
+<button type="{{ type }}"
+    class="btn-secondary {{ class }} px-6 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2">
+    {% if icon %}{{ icon | safe }}{% endif %}{{ text }}
+</button>
+{% endmacro %}
+
+{% macro btn_secondary_link(text, href, icon=None, class="") %}
+<a href="{{ href }}"
+    class="btn-secondary {{ class }} px-6 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 w-full sm:w-auto text-center">
+    {% if icon %}{{ icon | safe }}{% endif %}{{ text }}
+</a>
+{% endmacro %}
+
+{% macro btn_danger(text, type="button", icon=None, class="") %}
+<button type="{{ type }}"
+    class="btn-danger {{ class }} px-6 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2">
+    {% if icon %}{{ icon | safe }}{% endif %}{{ text }}
+</button>
+{% endmacro %}

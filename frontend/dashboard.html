@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | UniCollab.</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+
+<body class="bg-[#020617] text-white min-h-screen">
+
+    <nav class="navbar relative z-50">
+        <a href="dashboard.html" class="nav-brand flex items-center gap-2">
+            <img src="static/images/logo.svg" alt="logo" class="w-6 h-6"> UniCollab.
+        </a>
+        <div class="nav-links">
+            <a href="dashboard.html" class="nav-link"
+                style="font-weight:600; color:#818cf8; margin-right: 15px;">Dashboard</a>
+            <a href="explore.html" class="nav-link" style="margin-right: 15px;">Discover</a>
+        </div>
+        <div class="nav-user flex items-center gap-4">
+            <span id="nav-user-name" class="text-sm font-medium text-slate-300"></span>
+            <button onclick="API.logout()"
+                class="text-xs text-red-400 hover:text-red-300 transition-colors uppercase tracking-widest font-bold">Log
+                Off</button>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto p-4 md:p-8 mt-6">
+
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-white tracking-tight">Active Terminal</h1>
+                <p class="text-sm text-slate-400">Initialize or join operations across the grid.</p>
+            </div>
+            <button onclick="document.getElementById('createProjectModal').classList.toggle('hidden')"
+                class="btn-primary px-6 py-3 rounded-xl font-bold tracking-wide flex items-center gap-2 text-sm shadow-neon">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Initialize Project
+            </button>
+        </div>
+
+        <div id="loading" class="text-center py-10 text-slate-500 font-mono animate-pulse">Loading operations...</div>
+
+        <div id="project-list" class="space-y-4 hidden">
+            <!-- Populated by JS -->
+        </div>
+
+        <div id="no-projects" class="hidden text-center py-20 bg-white/5 rounded-2xl border border-white/10">
+            <p class="text-slate-400 font-medium">No active operations found. Initialize one to start.</p>
+        </div>
+    </div>
+
+    <!-- Create Project Modal -->
+    <div id="createProjectModal"
+        class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+        <div class="glass-panel p-8 rounded-2xl shadow-2xl max-w-lg w-full relative">
+            <button onclick="document.getElementById('createProjectModal').classList.add('hidden')"
+                class="absolute top-4 right-4 text-slate-500 hover:text-white">&times;</button>
+            <h2 class="text-xl font-bold text-white mb-6">Initialize New Project</h2>
+
+            <form id="createProjectForm" class="space-y-4">
+                <div class="space-y-2">
+                    <label class="block text-xs font-medium text-slate-400 uppercase tracking-widest">Operation
+                        Title</label>
+                    <input type="text" id="p_title" required
+                        class="cyber-input w-full px-4 py-2.5 rounded-lg text-sm bg-slate-900/50 text-white"
+                        placeholder="E.g., Neural Network UI">
+                </div>
+                <div class="space-y-2">
+                    <label
+                        class="block text-xs font-medium text-slate-400 uppercase tracking-widest">Description</label>
+                    <textarea id="p_desc" required
+                        class="cyber-input w-full px-4 py-2.5 rounded-lg text-sm bg-slate-900/50 text-white min-h-[100px]"
+                        placeholder="Brief context..."></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label class="block text-xs font-medium text-slate-400 uppercase tracking-widest">Skills
+                            Required (Comma separated)</label>
+                        <input type="text" id="p_skills" required
+                            class="cyber-input w-full px-4 py-2.5 rounded-lg text-sm bg-slate-900/50 text-white font-mono"
+                            placeholder="React, Python">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-xs font-medium text-slate-400 uppercase tracking-widest">Team Size
+                            Limit</label>
+                        <input type="number" id="p_size" required min="1" max="10"
+                            class="cyber-input w-full px-4 py-2.5 rounded-lg text-sm bg-slate-900/50 text-white"
+                            value="4">
+                    </div>
+                </div>
+                <button type="submit" id="createBtn"
+                    class="btn-primary w-full py-3 rounded-lg font-bold tracking-wide mt-4">Broadcast Objective</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        enforceAuth();
+        document.getElementById('nav-user-name').innerText = API.getUser().name;
+
+        async function loadProjects() {
+            try {
+                const projects = await API.getProjects();
+                const list = document.getElementById('project-list');
+                const loading = document.getElementById('loading');
+                const noProjects = document.getElementById('no-projects');
+
+                loading.classList.add('hidden');
+
+                if (!projects || projects.length === 0) {
+                    noProjects.classList.remove('hidden');
+                    return;
+                }
+
+                list.innerHTML = '';
+                projects.forEach(p => {
+                    const skillsHtml = p.skills_needed.map(skill =>
+                        `<span class="px-2 py-0.5 rounded text-[10px] bg-slate-800 border border-slate-700 text-slate-400 font-mono">${skill}</span>`
+                    ).join('');
+
+                    const el = `
+                        <div class="glass-panel p-6 rounded-xl border-l-4 border-l-indigo-500 hover:bg-white/5 transition-all flex flex-col md:flex-row justify-between gap-6 group">
+                            <div class="flex-1">
+                                <h3 class="text-xl font-bold text-white group-hover:text-indigo-400 transition-colors mb-2">${p.title}</h3>
+                                <p class="text-sm text-slate-400 mb-4 line-clamp-2">${p.description}</p>
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <span class="text-[10px] uppercase font-bold text-slate-500 tracking-widest mr-2">Core Reqs:</span>
+                                    ${skillsHtml}
+                                </div>
+                            </div>
+                            <div class="flex flex-col items-end justify-between min-w-[150px] shrink-0">
+                                <div class="text-right mb-4">
+                                    <p class="text-xs text-slate-500 font-mono">Commander</p>
+                                    <p class="text-sm font-bold text-slate-300 tracking-wide">${p.creator_name}</p>
+                                    <p class="text-xs text-slate-600 font-mono mt-1">Slots: ${p.team_size}</p>
+                                </div>
+                                <button onclick="alert('Join request sent to ${p.creator_name}')" class="btn-primary w-full py-2.5 rounded-lg text-xs font-bold uppercase tracking-widest shadow-neon text-center">
+                                    Join Operation
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    list.innerHTML += el;
+                });
+                list.classList.remove('hidden');
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById('loading').innerText = "System Failure: Could not load data.";
+            }
+        }
+
+        document.getElementById('createProjectForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('createBtn');
+            btn.innerHTML = 'Broadcasting...';
+            btn.disabled = true;
+
+            const title = document.getElementById('p_title').value;
+            const desc = document.getElementById('p_desc').value;
+            const skillsStr = document.getElementById('p_skills').value;
+            const size = parseInt(document.getElementById('p_size').value, 10);
+
+            const data = {
+                title: title,
+                description: desc,
+                skills_needed: skillsStr.split(',').map(s => s.trim()).filter(s => s),
+                team_size: size
+            };
+
+            try {
+                await API.createProject(data);
+                document.getElementById('createProjectModal').classList.add('hidden');
+                document.getElementById('createProjectForm').reset();
+                btn.innerHTML = 'Broadcast Objective';
+                btn.disabled = false;
+                document.getElementById('project-list').classList.add('hidden');
+                document.getElementById('loading').classList.remove('hidden');
+                document.getElementById('loading').innerText = 'Loading operations...';
+                document.getElementById('no-projects').classList.add('hidden');
+                loadProjects();
+            } catch (err) {
+                alert("Creation failed: " + err.message);
+                btn.innerHTML = 'Broadcast Objective';
+                btn.disabled = false;
+            }
+        });
+
+        loadProjects();
+    </script>
+</body>
+
+</html>

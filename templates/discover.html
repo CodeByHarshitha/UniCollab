@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Discover Collaborators - UniCollab{% endblock %}
+{% block page_title %}Collaborator Matrix{% endblock %}
+
+{% block content %}
+{% from 'components/card.html' import card %}
+{% from 'components/skill_tag.html' import skill_tag %}
+{% from 'components/button.html' import btn_primary, btn_secondary %}
+
+<div class="max-w-6xl mx-auto space-y-8">
+
+    <!-- Header Controls & Search -->
+    <div
+        class="glass-panel p-6 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden">
+        <div class="absolute -right-20 -top-20 w-64 h-64 bg-cyan-500/10 blur-[60px] rounded-full pointer-events-none">
+        </div>
+
+        <div class="relative z-10 text-center md:text-left flex-1 w-full max-w-md">
+            <h2 class="text-2xl font-bold text-white mb-4">Network Discovery</h2>
+            <div class="relative group">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-slate-500 group-focus-within:text-cyan-400 transition-colors" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+                <input type="text" id="searchInput"
+                    class="cyber-input w-full pl-11 pr-4 py-2.5 rounded-xl text-sm placeholder-slate-500"
+                    placeholder="Search collaborators by name or skill...">
+            </div>
+        </div>
+
+        <div class="relative z-10 shrink-0">
+            {{ btn_secondary('Recalibrate Match Engine', href='/interests', icon='<svg class="w-4 h-4" fill="none"
+                stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4">
+                </path>
+            </svg>') }}
+        </div>
+    </div>
+
+    <!-- Users Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="cardGrid">
+        {% for user in users %}
+        <div class="card-item" data-search="{{ user.name | lower }} {{ user.skills | join(' ') | lower }}">
+            {% set items_array = [
+            {'label': 'Focus Domains', 'values': user.interests},
+            {'label': 'Current Objectives', 'values': user.looking_for}
+            ] %}
+
+            {% set action_form %}
+            <form action="/request-collaboration" method="POST" class="flex flex-col gap-3">
+                <input type="hidden" name="receiver_email" value="{{ user.email }}">
+                <textarea name="message" placeholder="Initialize handshake... (Optional payload)"
+                    class="cyber-input w-full px-3 py-2 rounded-lg text-xs font-mono min-h-[60px] resize-y placeholder:text-slate-600 text-slate-300"></textarea>
+                <div class="flex gap-2">
+                    {{ btn_secondary_link('View Profile', href='#', class='flex-1 text-xs uppercase tracking-widest
+                    bg-slate-800/50 border-slate-700/50 hover:border-cyan-500/30 text-slate-300') }}
+                    {{ btn_primary('Request Collaboration', type='submit', icon='<svg class="w-3.5 h-3.5" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>', class='flex-1 text-xs uppercase tracking-widest bg-slate-800 border-slate-700
+                    hover:border-cyan-500/50') }}
+                </div>
+            </form>
+            {% endset %}
+
+            {{ card(title=user.name, subtitle='Verified Profile', skills=user.skills, items=items_array,
+            button_macro=action_form) }}
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if not users %}
+    <div class="glass-panel p-12 rounded-2xl text-center flex flex-col items-center justify-center min-h-[300px]">
+        <div
+            class="w-16 h-16 rounded-full bg-slate-800/50 border border-slate-700 flex items-center justify-center mb-4">
+            <svg class="w-8 h-8 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zm13 8v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75">
+                </path>
+            </svg>
+        </div>
+        <h3 class="text-xl font-bold text-white mb-2">No Profiles Detected</h3>
+        <p class="text-slate-400 max-w-md">There are currently no other operatives in the network matching your scan
+            criteria.</p>
+    </div>
+    {% endif %}
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('searchInput');
+        const cards = document.querySelectorAll('.card-item');
+
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                cards.forEach(card => {
+                    const searchData = card.getAttribute('data-search');
+                    if (searchData.includes(term)) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

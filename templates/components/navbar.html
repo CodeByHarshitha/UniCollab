@@ -1,0 +1,32 @@
+<header class="h-16 flex items-center justify-between px-6 border-b border-white/5 bg-surface/30 backdrop-blur-md">
+
+    <!-- Mobile Menu Toggle (Hidden on Desktop) -->
+    <button class="md:hidden text-slate-400 hover:text-white flex items-center gap-3">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16">
+            </path>
+        </svg>
+        <img src="/static/images/logo.svg" alt="UniCollab Logo"
+            class="w-6 h-6 drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]">
+        <span class="text-lg font-bold tracking-tight text-white/90">UniCollab.</span>
+    </button>
+
+    <!-- Page Context Engine -->
+    <div class="hidden md:flex items-center gap-2 text-sm text-slate-400">
+        <span class="text-indigo-400 font-mono">~/unicollab</span>
+        <span class="text-slate-600">/</span>
+        <span class="text-white font-medium capitalize">
+            {% block page_title %}{{ active_page|default('System') }}{% endblock %}
+        </span>
+    </div>
+
+    <!-- Header Actions -->
+    <div class="flex items-center gap-4">
+        {% block global_actions %}{% endblock %}
+        <span
+            class="flex items-center gap-2 text-xs font-mono text-cyan-400 border border-cyan-500/30 bg-cyan-500/10 px-2.5 py-1 rounded-full">
+            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+            Connected
+        </span>
+    </div>
+</header>

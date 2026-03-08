@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}Setup Profile - UniCollab{% endblock %}
+{% block page_title %}Identity Vector{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+
+    <!-- Onboarding Step Indicator -->
+    <div class="flex items-center justify-center mb-10">
+        <div class="flex flex-col items-center">
+            <div
+                class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold shadow-neon relative z-10 transition-transform hover:scale-105 duration-300">
+                1
+            </div>
+            <span class="text-xs font-medium text-indigo-400 mt-2 uppercase tracking-wide">Identity</span>
+        </div>
+
+        <div class="w-24 h-[2px] bg-slate-800 -mt-6 mx-2"></div>
+
+        <div class="flex flex-col items-center">
+            <div
+                class="w-10 h-10 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-500 font-bold relative z-10">
+                2
+            </div>
+            <span class="text-xs font-medium text-slate-500 mt-2 uppercase tracking-wide">Loadout</span>
+        </div>
+    </div>
+
+    <!-- Main Formulation Card -->
+    <div class="glass-panel p-8 sm:p-10 rounded-2xl relative overflow-hidden">
+        <!-- Decorative subtle grid internal -->
+        <div
+            class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTEgMWgyMHYyMEgxVjF6IiBmaWxsPSJub25lIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsMC4wMSkiIHN0cm9rZS13aWR0aD0iMSIvPjwvc3ZnPg==')] opacity-50 z-0 pointer-events-none">
+        </div>
+
+        <div class="relative z-10">
+            <h2 class="text-2xl font-bold text-white mb-2">Initialize Profile Vector</h2>
+            <p class="text-sm text-slate-400 mb-8 border-b border-white/5 pb-4">Define your academic parameters to
+                activate matching algorithms.</p>
+
+            <form action="/create-profile" method="POST" class="space-y-6">
+
+                <div class="space-y-2">
+                    <label for="full_name"
+                        class="block text-xs font-medium text-slate-400 uppercase tracking-wider">Full Designation
+                        (Name)</label>
+                    <input type="text" id="full_name" name="full_name" required
+                        class="cyber-input w-full px-4 py-3 rounded-xl text-sm"
+                        placeholder="E.g., Harshitha Kasaraneni">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label for="year_of_study"
+                            class="block text-xs font-medium text-slate-400 uppercase tracking-wider">Current Cycle
+                            (Year)</label>
+                        <select id="year_of_study" name="year_of_study" required
+                            class="cyber-input w-full px-4 py-3 rounded-xl text-sm appearance-none">
+                            <option value="">Select Year...</option>
+                            <option value="1st Year">1st Year</option>
+                            <option value="2nd Year">2nd Year</option>
+                            <option value="3rd Year">3rd Year</option>
+                            <option value="4th Year">4th Year</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label for="graduation_year"
+                            class="block text-xs font-medium text-slate-400 uppercase tracking-wider">Termination Cycle
+                            (Grad)</label>
+                        <select id="graduation_year" name="graduation_year" required
+                            class="cyber-input w-full px-4 py-3 rounded-xl text-sm appearance-none">
+                            <option value="">Select Year...</option>
+                            <option value="2024">2024</option>
+                            <option value="2025">2025</option>
+                            <option value="2026">2026</option>
+                            <option value="2027">2027</option>
+                            <option value="2028">2028</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label for="department"
+                        class="block text-xs font-medium text-slate-400 uppercase tracking-wider">Sector
+                        (Department)</label>
+                    <select id="department" name="department" required
+                        class="cyber-input w-full px-4 py-3 rounded-xl text-sm appearance-none">
+                        <option value="">Select Sector...</option>
+                        <option value="School of Computing">School of Computing</option>
+                        <option value="Electrical & Electronics">Electrical & Electronics</option>
+                        <option value="Mechanical Engineering">Mechanical Engineering</option>
+                        <option value="Civil Engineering">Civil Engineering</option>
+                        <option value="Bioengineering">Bioengineering</option>
+                    </select>
+                </div>
+
+                <div class="space-y-2">
+                    <label for="course"
+                        class="block text-xs font-medium text-slate-400 uppercase tracking-wider">Directive
+                        (Course)</label>
+                    <select id="course" name="course" required
+                        class="cyber-input w-full px-4 py-3 rounded-xl text-sm appearance-none">
+                        <option value="">Select Directive...</option>
+                        <option value="B.Tech">B.Tech</option>
+                        <option value="M.Tech">M.Tech</option>
+                        <option value="BCA">BCA</option>
+                        <option value="MCA">MCA</option>
+                        <option value="B.Sc">B.Sc</option>
+                    </select>
+                </div>
+
+                <div class="space-y-2">
+                    <label for="specialization"
+                        class="block text-xs font-medium text-slate-400 uppercase tracking-wider">Specialization</label>
+                    <select id="specialization" name="specialization" required
+                        class="cyber-input w-full px-4 py-3 rounded-xl text-sm appearance-none">
+                        <option value="">Select Specialization...</option>
+                        <option value="Computer Science Engineering">Computer Science Engineering</option>
+                        <option value="Artificial Intelligence">Artificial Intelligence</option>
+                        <option value="Data Science">Data Science</option>
+                        <option value="Cyber Security">Cyber Security</option>
+                        <option value="Information Technology">Information Technology</option>
+                        <option value="Core Electronics">Core Electronics</option>
+                        <option value="VLSI Systems">VLSI Systems</option>
+                        <option value="General">General / None</option>
+                    </select>
+                </div>
+
+                <div class="pt-6 mt-6 border-t border-white/5">
+                    <button type="submit"
+                        class="btn-primary w-full py-4 rounded-xl font-medium tracking-wide flex justify-center items-center gap-2 shadow-neon group">
+                        <span>Save & Proceed to Loadout</span>
+                        <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
