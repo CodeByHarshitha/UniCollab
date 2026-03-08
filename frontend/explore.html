@@ -12,20 +12,44 @@
 
 <body class="bg-[#020617] text-white min-h-screen">
 
-    <nav class="navbar relative z-50">
-        <a href="dashboard.html" class="nav-brand flex items-center gap-2">
-            <img src="static/images/logo.svg" alt="logo" class="w-6 h-6"> UniCollab.
-        </a>
-        <div class="nav-links">
-            <a href="dashboard.html" class="nav-link" style="margin-right: 15px;">Dashboard</a>
-            <a href="explore.html" class="nav-link"
-                style="font-weight:600; color:#22d3ee; margin-right: 15px;">Discover</a>
-        </div>
-        <div class="nav-user flex items-center gap-4">
-            <span id="nav-user-name" class="text-sm font-medium text-slate-300"></span>
-            <button onclick="API.logout()"
-                class="text-xs text-red-400 hover:text-red-300 transition-colors uppercase tracking-widest font-bold">Log
-                Off</button>
+    <nav class="sticky top-0 z-50 backdrop-blur-xl bg-[#020617]/80 border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Left: Logo & Links -->
+                <div class="flex items-center gap-8">
+                    <!-- Brand -->
+                    <a href="dashboard.html" class="flex items-center gap-2 group">
+                        <img src="static/images/logo.svg" alt="logo"
+                            class="w-6 h-6 group-hover:scale-110 transition-transform">
+                        <span
+                            class="font-bold text-lg tracking-tight text-white group-hover:text-cyan-400 transition-colors">UniCollab.</span>
+                    </a>
+
+                    <!-- App Navigation -->
+                    <div class="flex items-center space-x-1">
+                        <a href="dashboard.html"
+                            class="px-3 py-2 rounded-lg text-sm font-medium transition-colors text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10">Dashboard</a>
+                        <a href="explore.html"
+                            class="px-3 py-2 rounded-lg text-sm font-medium transition-colors bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">Discover</a>
+                    </div>
+                </div>
+
+                <!-- Right: User & Actions -->
+                <div class="flex items-center gap-4">
+                    <div
+                        class="hidden sm:flex items-center gap-3 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
+                        <div
+                            class="w-6 h-6 rounded-full bg-cyan-500/20 border border-cyan-500/50 flex justify-center items-center text-cyan-400 font-bold text-[10px] uppercase shadow-[0_0_10px_rgba(34,211,238,0.2)]">
+                            <span id="nav-user-initial">U</span>
+                        </div>
+                        <span id="nav-user-name" class="text-sm font-medium text-slate-300"></span>
+                    </div>
+                    <div class="h-4 w-px bg-white/10 hidden sm:block"></div>
+                    <button onclick="API.logout()"
+                        class="text-xs text-slate-500 hover:text-red-400 transition-colors uppercase tracking-widest font-bold">Log
+                        Off</button>
+                </div>
+            </div>
         </div>
     </nav>
 
@@ -49,7 +73,11 @@
     <script src="js/api.js"></script>
     <script>
         enforceAuth();
-        document.getElementById('nav-user-name').innerText = API.getUser().name;
+        const user = API.getUser();
+        if (user && user.name) {
+            document.getElementById('nav-user-name').innerText = user.name;
+            document.getElementById('nav-user-initial').innerText = user.name.charAt(0).toUpperCase();
+        }
 
         async function loadDiscover() {
             try {
