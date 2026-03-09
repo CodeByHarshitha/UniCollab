@@ -47,16 +47,15 @@
                 </div>
 
                 <div class="space-y-2">
-                    <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider">Full Designation
-                        (Name)</label>
+                    <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider">Full Name</label>
                     <input type="text" id="full_name" required class="cyber-input w-full px-4 py-3 rounded-xl text-sm"
                         placeholder="E.g., Harshitha Kasaraneni">
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="space-y-2">
-                        <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider">Current Cycle
-                            (Year)</label>
+                        <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider">Year of
+                            Study</label>
                         <select id="year_of_study" required
                             class="cyber-input w-full px-4 py-3 rounded-xl text-sm appearance-none flex">
                             <option value="">Select Year...</option>
@@ -68,8 +67,8 @@
                     </div>
 
                     <div class="space-y-2">
-                        <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider">Termination
-                            Cycle (Grad)</label>
+                        <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider">Expected
+                            Graduation Year</label>
                         <select id="graduation_year" required
                             class="cyber-input w-full px-4 py-3 rounded-xl text-sm appearance-none">
                             <option value="">Select Year...</option>
@@ -83,8 +82,7 @@
                 </div>
 
                 <div class="space-y-2">
-                    <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider">Sector
-                        (Department)</label>
+                    <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider">Department</label>
                     <select id="department" required
                         class="cyber-input w-full px-4 py-3 rounded-xl text-sm appearance-none">
                         <option value="">Select Sector...</option>
@@ -96,8 +94,7 @@
                 </div>
 
                 <div class="space-y-2">
-                    <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider">Directive
-                        (Course)</label>
+                    <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider">Course</label>
                     <select id="course" required
                         class="cyber-input w-full px-4 py-3 rounded-xl text-sm appearance-none">
                         <option value="">Select Directive...</option>
@@ -109,8 +106,8 @@
                 </div>
 
                 <div class="space-y-2">
-                    <label
-                        class="block text-xs font-medium text-slate-400 uppercase tracking-wider">Specialization</label>
+                    <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider">Specialization /
+                        Focus Area</label>
                     <select id="specialization" required
                         class="cyber-input w-full px-4 py-3 rounded-xl text-sm appearance-none">
                         <option value="">Select Specialization...</option>
@@ -123,7 +120,9 @@
                 </div>
 
                 <div class="pt-6 mt-6 border-t border-white/5">
-                    <span>Save & Proceed to Skills</span>
+                    <button type="submit" id="saveBtn"
+                        class="btn-primary w-full py-4 rounded-xl font-medium tracking-wide flex justify-center items-center gap-2">
+                        <span>Save & Proceed</span>
                     </button>
                 </div>
             </form>
@@ -146,7 +145,7 @@
             const errorDiv = document.getElementById('error-message');
 
             errorDiv.classList.add('hidden');
-            btn.innerHTML = '<span>Saving Profile...</span>';
+            btn.innerHTML = '<span>Saving...</span>';
             btn.disabled = true;
 
             const profileData = {
@@ -166,7 +165,7 @@
             } catch (err) {
                 errorDiv.textContent = err.message || "Failed to save profile.";
                 errorDiv.classList.remove('hidden');
-                btn.innerHTML = '<span>Save & Proceed to Skills</span>';
+                btn.innerHTML = '<span>Save & Proceed</span>';
                 btn.disabled = false;
             }
         });
