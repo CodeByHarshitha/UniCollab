@@ -40,33 +40,32 @@
         </div>
 
         <div class="glass-panel p-8 sm:p-10 rounded-2xl shadow-2xl relative overflow-hidden">
-            <h2 class="text-2xl font-bold text-white mb-2">Technical Skills</h2>
-            <p class="text-sm text-slate-400 mb-8 border-b border-white/5 pb-4">Define your programming languages
-                and
-                core capabilities.</p>
+            <h2 class="text-2xl font-bold text-white mb-2">Your Skills & Interests</h2>
+            <p class="text-sm text-slate-400 mb-8 border-b border-white/5 pb-4">Pick skills to help us find
+                collaborators with similar interests.</p>
 
             <div class="space-y-6">
                 <!-- Active Skill Tags Area -->
                 <div>
-                    <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-3">Active
+                    <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-3">Your Selected
                         Skills</label>
                     <div class="min-h-[80px] p-4 bg-slate-900/50 border border-slate-700/50 rounded-xl flex flex-wrap gap-2 items-start shadow-inner"
                         id="selectedSkillsArea">
-                        <span class="text-slate-500 text-sm italic py-1" id="emptyText">No capabilities
-                            programmed...</span>
+                        <span class="text-slate-500 text-sm italic py-1" id="emptyText">You haven't added any skills
+                            yet. Start typing or pick from suggestions.</span>
                     </div>
                 </div>
 
                 <!-- Input area -->
                 <div>
-                    <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-2">Input
-                        Console</label>
+                    <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-2">Add a
+                        Skill</label>
                     <div class="flex gap-3">
-                        <input type="text" id="customSkillInput" placeholder="Type a skill and hit Enter..."
-                            autocomplete="off"
+                        <input type="text" id="customSkillInput"
+                            placeholder="Type a skill and press Enter or select from suggestions" autocomplete="off"
                             class="cyber-input flex-1 px-4 py-3 rounded-xl text-sm font-mono placeholder:font-sans">
                         <button type="button" class="btn-secondary px-6 py-3 rounded-xl font-medium tracking-wide"
-                            id="addCustomSkillBtn">Add</button>
+                            id="addCustomSkillBtn">Add Skill</button>
                     </div>
                 </div>
 
@@ -104,7 +103,12 @@
     <script>
         enforceAuth();
 
-        const presetSkills = ["Python", "Machine Learning", "UI/UX", "Web Development", "Data Science", "AI", "Blockchain", "Cybersecurity", "React", "FastAPI"];
+        const presetSkills = [
+            "Python", "Java", "C++", "JavaScript", "React", "FastAPI", "Django",
+            "Machine Learning", "Data Science", "AI", "UI/UX Design", "Web Development",
+            "Mobile App Development", "Blockchain", "Cybersecurity", "Cloud Computing",
+            "DevOps", "SQL / Databases", "Git / Version Control"
+        ];
         let currentSkills = [];
 
         const inputField = document.getElementById('customSkillInput');
@@ -127,7 +131,7 @@
             if (currentSkills.length === 0) {
                 const span = document.createElement('span');
                 span.className = 'text-slate-500 text-sm italic py-1';
-                span.innerText = 'No capabilities programmed...';
+                span.innerText = "You haven't added any skills yet. Start typing or pick from suggestions.";
                 selectedArea.appendChild(span);
             } else {
                 currentSkills.forEach(skill => {
