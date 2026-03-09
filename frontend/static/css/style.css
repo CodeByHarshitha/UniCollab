@@ -1,8 +1,8 @@
-/* Custom Base Styles for UniCollab */
+/* Custom Base Styles for UniCollab Light Theme */
 body {
     font-family: 'Inter', sans-serif;
-    background-color: #020617;
-    color: #E5E7EB;
+    background: linear-gradient(135deg, #fefce8 0%, #ecfdf5 100%);
+    color: #1e293b;
     overflow-x: hidden;
 }
 
@@ -12,39 +12,39 @@ body {
 
 /* Glassmorphism Utilities */
 .glass-panel {
-    background: rgba(17, 24, 39, 0.75);
+    background: rgba(255, 255, 255, 0.75);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
     transition: all 0.3s ease;
 }
 
 .glass-panel-hover:hover {
-    border-color: rgba(99, 102, 241, 0.4);
-    box-shadow: 0 0 15px rgba(99, 102, 241, 0.15), 0 8px 30px rgba(0, 0, 0, 0.4);
+    border-color: rgba(59, 130, 246, 0.4);
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.15), 0 8px 30px rgba(0, 0, 0, 0.08);
     transform: translateY(-2px);
 }
 
 /* Global Input Styling */
 .cyber-input {
-    background: rgba(15, 23, 42, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #E5E7EB;
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    color: #0f172a;
     transition: all 0.3s ease;
     width: 100%;
 }
 
 .cyber-input:focus {
     outline: none;
-    border-color: #6366F1;
-    box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
-    background: rgba(15, 23, 42, 0.8);
+    border-color: #3b82f6;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+    background: rgba(255, 255, 255, 0.9);
 }
 
 /* Global Button Styling */
 .btn-primary {
-    background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
     color: white;
     transition: all 0.3s ease;
     position: relative;
@@ -61,14 +61,14 @@ body {
 }
 
 .btn-primary:hover {
-    box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
     transform: translateY(-1px);
 }
 
 .btn-secondary {
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #E5E7EB;
+    background: white;
+    border: 1px solid rgba(148, 163, 184, 0.4);
+    color: #475569;
     transition: all 0.3s ease;
     border-radius: 6px;
     padding: 0.5rem 1rem;
@@ -81,15 +81,15 @@ body {
 }
 
 .btn-secondary:hover {
-    border-color: #22D3EE;
-    color: #22D3EE;
-    background: rgba(34, 211, 238, 0.05);
+    border-color: #3b82f6;
+    color: #3b82f6;
+    background: rgba(59, 130, 246, 0.05);
 }
 
 .btn-danger {
-    background: transparent;
-    border: 1px solid rgba(239, 68, 68, 0.3);
-    color: #FCA5A5;
+    background: white;
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #ef4444;
     transition: all 0.3s ease;
     border-radius: 6px;
     padding: 0.5rem 1rem;
@@ -102,9 +102,9 @@ body {
 }
 
 .btn-danger:hover {
-    border-color: #EF4444;
-    color: #EF4444;
-    background: rgba(239, 68, 68, 0.1);
+    border-color: #dc2626;
+    color: #dc2626;
+    background: rgba(239, 68, 68, 0.05);
 }
 
 /* Scrollbar Styling */
@@ -114,16 +114,16 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-    background: #020617;
+    background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #1E293B;
+    background: #cbd5e1;
     border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #334155;
+    background: #94a3b8;
 }
 
 /* Background Grid */
@@ -134,8 +134,8 @@ body {
     width: 100vw;
     height: 100vh;
     background-size: 50px 50px;
-    background-image: linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
     z-index: -10;
     pointer-events: none;
 }
@@ -146,7 +146,7 @@ body {
     left: -10%;
     width: 70vw;
     height: 70vh;
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, rgba(2, 6, 23, 0) 70%);
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
     z-index: -9;
     pointer-events: none;
 }
@@ -159,12 +159,12 @@ body {
 
 .nav-item:hover,
 .nav-item.active {
-    background: linear-gradient(90deg, rgba(99, 102, 241, 0.15) 0%, transparent 100%);
-    border-left-color: #6366F1;
-    color: white;
+    background: linear-gradient(90deg, rgba(59, 130, 246, 0.1) 0%, transparent 100%);
+    border-left-color: #3b82f6;
+    color: #0f172a;
 }
 
 .nav-item.active svg {
-    color: #6366F1;
-    filter: drop-shadow(0 0 5px rgba(99, 102, 241, 0.5));
+    color: #3b82f6;
+    filter: drop-shadow(0 0 5px rgba(59, 130, 246, 0.3));
 }

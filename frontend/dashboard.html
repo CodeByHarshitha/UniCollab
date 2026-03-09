@@ -55,60 +55,140 @@
 
     <div class="max-w-7xl mx-auto p-4 md:p-8 mt-6">
 
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
-            <div>
-                <h1 class="text-3xl font-bold text-white tracking-tight">Active Terminal</h1>
-                <p class="text-sm text-slate-400">Initialize or join operations across the grid.</p>
-            </div>
-            <div class="relative">
-                <button onclick="toggleDropdown()" id="createNewBtn"
-                    class="btn-primary px-6 py-3 rounded-xl font-bold tracking-wide flex items-center gap-2 text-sm shadow-neon hover:shadow-[0_0_20px_rgba(99,102,241,0.4)] transition-all">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="mb-10 text-center">
+            <h1 class="text-4xl font-bold text-slate-800 tracking-tight mb-3">Welcome to UniCollab.</h1>
+            <p class="text-slate-500">What would you like to build today?</p>
+        </div>
+
+        <!-- 4 Card Action Grid -->
+        <div id="action-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10 transition-all duration-500">
+
+            <!-- Card 1: Start Project -->
+            <div onclick="showInlineForm('project')"
+                class="glass-panel p-8 rounded-2xl border-t-4 border-t-blue-500 hover:-translate-y-2 transition-transform duration-300 shadow-lg group cursor-pointer relative overflow-hidden">
+                <div
+                    class="absolute -right-10 -top-10 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-all">
+                </div>
+                <div
+                    class="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-shadow">
+                    <svg class="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                     </svg>
-                    + Create New
-                </button>
-                <div id="createNewDropdown"
-                    class="hidden absolute right-0 mt-2 w-48 rounded-xl shadow-2xl bg-[#0f172a] border border-white/10 overflow-hidden z-50 transform opacity-0 scale-95 transition-all duration-200">
-                    <button onclick="showInlineForm('project')"
-                        class="w-full text-left px-4 py-3 text-sm text-slate-300 hover:bg-indigo-500/20 hover:text-indigo-400 transition-colors flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                            </path>
-                        </svg>
-                        Project
-                    </button>
-                    <button onclick="showInlineForm('hackathon')"
-                        class="w-full text-left px-4 py-3 text-sm text-slate-300 hover:bg-cyan-500/20 hover:text-cyan-400 transition-colors flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                        </svg>
-                        Hackathon
-                    </button>
+                </div>
+                <h3 class="text-2xl font-bold text-slate-800 mb-2 group-hover:text-blue-600 transition-colors">Start a
+                    Project</h3>
+                <p class="text-sm text-slate-500 mb-6">Initialize a new operation, define your tech stack, and recruit
+                    top peers.</p>
+                <div class="text-blue-600 text-sm font-bold flex items-center gap-2 group-hover:gap-3 transition-all">
+                    Initialize Form
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                    </svg>
                 </div>
             </div>
+
+            <!-- Card 2: Join Project -->
+            <div onclick="window.location.href='explore.html'"
+                class="glass-panel p-8 rounded-2xl border-t-4 border-t-indigo-500 hover:-translate-y-2 transition-transform duration-300 shadow-lg group cursor-pointer relative overflow-hidden">
+                <div
+                    class="absolute -right-10 -top-10 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl group-hover:bg-indigo-500/20 transition-all">
+                </div>
+                <div
+                    class="w-14 h-14 bg-indigo-100 rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:shadow-[0_0_15px_rgba(99,102,241,0.5)] transition-shadow">
+                    <svg class="w-7 h-7 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                        </path>
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-slate-800 mb-2 group-hover:text-indigo-600 transition-colors">Join a
+                    Project</h3>
+                <p class="text-sm text-slate-500 mb-6">Browse active projects on the network and collaborate with other
+                    students.</p>
+                <div class="text-indigo-600 text-sm font-bold flex items-center gap-2 group-hover:gap-3 transition-all">
+                    Discover Projects
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Card 3: Organize Hackathon -->
+            <div onclick="showInlineForm('hackathon')"
+                class="glass-panel p-8 rounded-2xl border-t-4 border-t-teal-500 hover:-translate-y-2 transition-transform duration-300 shadow-lg group cursor-pointer relative overflow-hidden">
+                <div
+                    class="absolute -right-10 -top-10 w-32 h-32 bg-teal-500/10 rounded-full blur-2xl group-hover:bg-teal-500/20 transition-all">
+                </div>
+                <div
+                    class="w-14 h-14 bg-teal-100 rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:shadow-[0_0_15px_rgba(20,184,166,0.5)] transition-shadow">
+                    <svg class="w-7 h-7 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-slate-800 mb-2 group-hover:text-teal-600 transition-colors">Organize
+                    Hackathon</h3>
+                <p class="text-sm text-slate-500 mb-6">Set up a hackathon team, define your theme, and prepare for the
+                    event.</p>
+                <div class="text-teal-600 text-sm font-bold flex items-center gap-2 group-hover:gap-3 transition-all">
+                    Launch Event
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Card 4: Join Hackathon -->
+            <div onclick="alert('Hackathon network coming soon!')"
+                class="glass-panel p-8 rounded-2xl border-t-4 border-t-emerald-500 hover:-translate-y-2 transition-transform duration-300 shadow-lg group cursor-pointer relative overflow-hidden">
+                <div
+                    class="absolute -right-10 -top-10 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all">
+                </div>
+                <div
+                    class="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:shadow-[0_0_15px_rgba(16,185,129,0.5)] transition-shadow">
+                    <svg class="w-7 h-7 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9">
+                        </path>
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-slate-800 mb-2 group-hover:text-emerald-600 transition-colors">Join a
+                    Hackathon</h3>
+                <p class="text-sm text-slate-500 mb-6">Find active hackathon teams seeking your specific engineering
+                    skills.</p>
+                <div
+                    class="text-emerald-600 text-sm font-bold flex items-center gap-2 group-hover:gap-3 transition-all">
+                    Browse Teams
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                    </svg>
+                </div>
+            </div>
+
         </div>
 
         <!-- Inline Forms Container -->
         <div id="inlineFormsContainer" class="hidden mb-10 overflow-hidden transition-all duration-500 ease-in-out">
             <!-- Project Form Card -->
             <div id="projectFormCard"
-                class="hidden glass-panel p-6 sm:p-8 rounded-2xl border-l-4 border-l-indigo-500 relative">
+                class="hidden glass-panel p-6 sm:p-8 rounded-2xl border-l-4 border-l-blue-500 relative">
                 <button onclick="hideInlineForm()"
-                    class="absolute top-4 right-4 text-slate-500 hover:text-white transition-colors">&times;</button>
-                <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    class="absolute top-4 right-4 text-slate-400 hover:text-red-500 transition-colors">&times;</button>
+                <h2 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
                         </path>
                     </svg>
-                    Initialize New Project
+                    Start a New Project
                 </h2>
                 <form id="inlineProjectForm" class="space-y-5">
                     <div class="space-y-2">
-                        <label class="block text-xs font-medium text-slate-400 uppercase tracking-widest">Operation
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest">Project
                             Title</label>
                         <input type="text" id="ip_title" required
                             class="cyber-input w-full px-4 py-3 rounded-lg text-sm"
@@ -116,7 +196,7 @@
                     </div>
                     <div class="space-y-2">
                         <label
-                            class="block text-xs font-medium text-slate-400 uppercase tracking-widest">Description</label>
+                            class="block text-xs font-bold text-slate-500 uppercase tracking-widest">Description</label>
                         <textarea id="ip_desc" required
                             class="cyber-input w-full px-4 py-3 rounded-lg text-sm min-h-[80px]"
                             placeholder="Brief context..."></textarea>
@@ -124,7 +204,7 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div class="space-y-2">
-                            <label class="block text-xs font-medium text-slate-400 uppercase tracking-widest">Tech
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest">Tech
                                 Stack</label>
                             <div class="relative">
                                 <input type="text" id="ip_techInput"
@@ -132,13 +212,13 @@
                                     placeholder="Type tech & press Enter"
                                     onkeydown="handleChipInput(event, 'ip_techInput', 'ip_techChipsContainer', 'ip_techChips')">
                                 <div id="ip_techChipsContainer"
-                                    class="flex flex-wrap gap-2 mt-3 min-h-[30px] p-2 bg-slate-900/30 rounded-lg border border-white/5">
-                                    <span class="text-slate-600 text-[10px] italic py-1 px-2">No items added.</span>
+                                    class="flex flex-wrap gap-2 mt-3 min-h-[30px] p-2 bg-slate-50/50 rounded-lg border border-slate-200">
+                                    <span class="text-slate-400 text-[10px] italic py-1 px-2">No items added.</span>
                                 </div>
                             </div>
                         </div>
                         <div class="space-y-2">
-                            <label class="block text-xs font-medium text-slate-400 uppercase tracking-widest">Required
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest">Required
                                 Skills</label>
                             <div class="relative">
                                 <input type="text" id="ip_skillsInput"
@@ -146,8 +226,8 @@
                                     placeholder="Type skill & press Enter"
                                     onkeydown="handleChipInput(event, 'ip_skillsInput', 'ip_skillsChipsContainer', 'ip_skillsChips')">
                                 <div id="ip_skillsChipsContainer"
-                                    class="flex flex-wrap gap-2 mt-3 min-h-[30px] p-2 bg-slate-900/30 rounded-lg border border-white/5">
-                                    <span class="text-slate-600 text-[10px] italic py-1 px-2">No items added.</span>
+                                    class="flex flex-wrap gap-2 mt-3 min-h-[30px] p-2 bg-slate-50/50 rounded-lg border border-slate-200">
+                                    <span class="text-slate-400 text-[10px] italic py-1 px-2">No items added.</span>
                                 </div>
                             </div>
                         </div>
@@ -156,7 +236,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div class="space-y-2">
                             <label
-                                class="block text-xs font-medium text-slate-400 uppercase tracking-widest">Duration</label>
+                                class="block text-xs font-bold text-slate-500 uppercase tracking-widest">Duration</label>
                             <select id="ip_duration" required
                                 class="cyber-input w-full px-4 py-3 rounded-lg text-sm appearance-none flex">
                                 <option value="">Select duration...</option>
@@ -167,18 +247,18 @@
                             </select>
                         </div>
                         <div class="space-y-2">
-                            <label class="block text-xs font-medium text-slate-400 uppercase tracking-widest">Team Size
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest">Team Size
                                 Limit</label>
                             <input type="number" id="ip_size" required min="1" max="10"
                                 class="cyber-input w-full px-4 py-3 rounded-lg text-sm" value="4">
                         </div>
                     </div>
 
-                    <div class="pt-4 border-t border-white/5 flex justify-end gap-3">
+                    <div class="pt-4 border-t border-slate-200 flex justify-end gap-3">
                         <button type="button" onclick="hideInlineForm()"
-                            class="px-6 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white transition-colors">Cancel</button>
+                            class="px-6 py-2.5 rounded-lg text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors">Cancel</button>
                         <button type="submit" id="ip_submitBtn"
-                            class="btn-primary px-8 py-2.5 rounded-lg text-sm font-bold tracking-wide shadow-neon">Broadcast
+                            class="btn-primary px-8 py-2.5 rounded-lg text-sm font-bold tracking-wide">Broadcast
                             Project</button>
                     </div>
                 </form>
@@ -186,11 +266,11 @@
 
             <!-- Hackathon Form Card -->
             <div id="hackathonFormCard"
-                class="hidden glass-panel p-6 sm:p-8 rounded-2xl border-l-4 border-l-cyan-500 relative">
+                class="hidden glass-panel p-6 sm:p-8 rounded-2xl border-l-4 border-l-teal-500 relative">
                 <button onclick="hideInlineForm()"
-                    class="absolute top-4 right-4 text-slate-500 hover:text-white transition-colors">&times;</button>
-                <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    class="absolute top-4 right-4 text-slate-400 hover:text-red-500 transition-colors">&times;</button>
+                <h2 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                     </svg>
@@ -198,14 +278,14 @@
                 </h2>
                 <form id="inlineHackathonForm" class="space-y-5">
                     <div class="space-y-2">
-                        <label class="block text-xs font-medium text-slate-400 uppercase tracking-widest">Hackathon
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest">Hackathon
                             Name</label>
                         <input type="text" id="ih_name" required class="cyber-input w-full px-4 py-3 rounded-lg text-sm"
                             placeholder="E.g., Web3 Innovators Hack">
                     </div>
                     <div class="space-y-2">
                         <label
-                            class="block text-xs font-medium text-slate-400 uppercase tracking-widest">Description</label>
+                            class="block text-xs font-bold text-slate-500 uppercase tracking-widest">Description</label>
                         <textarea id="ih_desc" required
                             class="cyber-input w-full px-4 py-3 rounded-lg text-sm min-h-[80px]"
                             placeholder="Event goals, prizes, details..."></textarea>
@@ -214,13 +294,13 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div class="space-y-2">
                             <label
-                                class="block text-xs font-medium text-slate-400 uppercase tracking-widest">Theme</label>
+                                class="block text-xs font-bold text-slate-500 uppercase tracking-widest">Theme</label>
                             <input type="text" id="ih_theme" required
                                 class="cyber-input w-full px-4 py-3 rounded-lg text-sm"
                                 placeholder="E.g., Decentralized Finance">
                         </div>
                         <div class="space-y-2">
-                            <label class="block text-xs font-medium text-slate-400 uppercase tracking-widest">Tech Stack
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest">Tech Stack
                                 (Optional)</label>
                             <div class="relative">
                                 <input type="text" id="ih_techInput"
@@ -228,8 +308,8 @@
                                     placeholder="Type tech & press Enter"
                                     onkeydown="handleChipInput(event, 'ih_techInput', 'ih_techChipsContainer', 'ih_techChips')">
                                 <div id="ih_techChipsContainer"
-                                    class="flex flex-wrap gap-2 mt-3 min-h-[30px] p-2 bg-slate-900/30 rounded-lg border border-white/5">
-                                    <span class="text-slate-600 text-[10px] italic py-1 px-2">No items added.</span>
+                                    class="flex flex-wrap gap-2 mt-3 min-h-[30px] p-2 bg-slate-50/50 rounded-lg border border-slate-200">
+                                    <span class="text-slate-400 text-[10px] italic py-1 px-2">No items added.</span>
                                 </div>
                             </div>
                         </div>
@@ -237,38 +317,39 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div class="space-y-2">
-                            <label class="block text-xs font-medium text-slate-400 uppercase tracking-widest">Team Size
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest">Team Size
                                 (Max)</label>
                             <input type="number" id="ih_size" required min="1" max="10"
                                 class="cyber-input w-full px-4 py-3 rounded-lg text-sm" value="4">
                         </div>
                         <div class="space-y-2">
-                            <label
-                                class="block text-xs font-medium text-slate-400 uppercase tracking-widest">Registration
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest">Registration
                                 Deadline</label>
                             <input type="date" id="ih_deadline" required
-                                class="cyber-input w-full px-4 py-3 rounded-lg text-sm text-slate-300 pattern-date flex">
+                                class="cyber-input w-full px-4 py-3 rounded-lg text-sm text-slate-600 pattern-date flex">
                         </div>
                     </div>
 
-                    <div class="pt-4 border-t border-white/5 flex justify-end gap-3">
+                    <div class="pt-4 border-t border-slate-200 flex justify-end gap-3">
                         <button type="button" onclick="hideInlineForm()"
-                            class="px-6 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white transition-colors">Cancel</button>
+                            class="px-6 py-2.5 rounded-lg text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors">Cancel</button>
                         <button type="submit" id="ih_submitBtn"
-                            class="bg-cyan-500 hover:bg-cyan-400 text-slate-900 px-8 py-2.5 rounded-lg text-sm font-bold tracking-wide shadow-[0_0_15px_rgba(34,211,238,0.4)] hover:shadow-[0_0_25px_rgba(34,211,238,0.6)] transition-all">Launch
+                            class="bg-teal-500 hover:bg-teal-400 text-white px-8 py-2.5 rounded-lg text-sm font-bold tracking-wide shadow-[0_0_15px_rgba(20,184,166,0.4)] hover:shadow-[0_0_25px_rgba(20,184,166,0.6)] transition-all">Launch
                             Hackathon</button>
                     </div>
                 </form>
             </div>
         </div>
 
-        <div id="loading" class="text-center py-10 text-slate-500 font-mono animate-pulse">Loading operations...</div>
-        <div id="project-list" class="space-y-4 hidden">
-            <!-- Populated by JS -->
+        <div id="loading" class="text-center py-10 text-slate-500 font-mono animate-pulse hidden">Loading operations...
         </div>
 
-        <div id="no-projects" class="hidden text-center py-20 bg-white/5 rounded-2xl border border-white/10">
-            <p class="text-slate-400 font-medium">No active operations found. Initialize one to start.</p>
+        <div id="project-list" class="space-y-4 hidden">
+            <!-- Feed will be shown via Join Project logic later -->
+        </div>
+
+        <div id="no-projects" class="hidden text-center py-20 bg-white/50 rounded-2xl border border-slate-200">
+            <p class="text-slate-500 font-medium">No active operations found. Initialize one to start.</p>
         </div>
     </div>
 
@@ -304,22 +385,22 @@
                     ).join('');
 
                     const el = `
-                        <div class="glass-panel p-6 rounded-xl border-l-4 border-l-indigo-500 hover:bg-white/5 transition-all flex flex-col md:flex-row justify-between gap-6 group">
+                        <div class="glass-panel p-6 rounded-xl border-l-4 border-l-blue-500 hover:bg-slate-50 transition-all flex flex-col md:flex-row justify-between gap-6 group">
                             <div class="flex-1">
-                                <h3 class="text-xl font-bold text-white group-hover:text-indigo-400 transition-colors mb-2">${p.title}</h3>
-                                <p class="text-sm text-slate-400 mb-4 line-clamp-2">${p.description}</p>
+                                <h3 class="text-xl font-bold text-slate-800 group-hover:text-blue-600 transition-colors mb-2">${p.title}</h3>
+                                <p class="text-sm text-slate-500 mb-4 line-clamp-2">${p.description}</p>
                                 <div class="flex flex-wrap items-center gap-2">
-                                    <span class="text-[10px] uppercase font-bold text-slate-500 tracking-widest mr-2">Project Tech Stack:</span>
+                                    <span class="text-[10px] uppercase font-bold text-slate-400 tracking-widest mr-2">Project Tech Stack:</span>
                                     ${skillsHtml}
                                 </div>
                             </div>
                             <div class="flex flex-col items-end justify-between min-w-[150px] shrink-0">
                                 <div class="text-right mb-4">
-                                    <p class="text-xs text-slate-500 font-mono">Commander</p>
-                                    <p class="text-sm font-bold text-slate-300 tracking-wide">${p.creator_name}</p>
-                                    <p class="text-xs text-slate-600 font-mono mt-1">Slots: ${p.team_size}</p>
+                                    <p class="text-xs text-slate-400 font-mono">Commander</p>
+                                    <p class="text-sm font-bold text-slate-700 tracking-wide">${p.creator_name}</p>
+                                    <p class="text-xs text-slate-500 font-mono mt-1">Slots: ${p.team_size}</p>
                                 </div>
-                                <button onclick="alert('Join request sent to ${p.creator_name}')" class="btn-primary w-full py-2.5 rounded-lg text-xs font-bold uppercase tracking-widest shadow-neon text-center">
+                                <button onclick="alert('Join request sent to ${p.creator_name}')" class="btn-primary w-full py-2.5 rounded-lg text-xs font-bold uppercase tracking-widest text-center shadow-[0_0_10px_rgba(59,130,246,0.2)]">
                                     Join Operation
                                 </button>
                             </div>
@@ -365,29 +446,59 @@
 
         function showInlineForm(type) {
             const dropdown = document.getElementById('createNewDropdown');
-            dropdown.classList.remove('opacity-100', 'scale-100');
-            dropdown.classList.add('opacity-0', 'scale-95');
-            setTimeout(() => dropdown.classList.add('hidden'), 200);
+            if (dropdown) {
+                dropdown.classList.remove('opacity-100', 'scale-100');
+                dropdown.classList.add('opacity-0', 'scale-95');
+                setTimeout(() => dropdown.classList.add('hidden'), 200);
+            }
 
             const container = document.getElementById('inlineFormsContainer');
             const projectCard = document.getElementById('projectFormCard');
             const hackathonCard = document.getElementById('hackathonFormCard');
+            const actionGrid = document.getElementById('action-grid');
 
-            container.classList.remove('hidden');
-
-            if (type === 'project') {
-                projectCard.classList.remove('hidden');
-                hackathonCard.classList.add('hidden');
-            } else if (type === 'hackathon') {
-                hackathonCard.classList.remove('hidden');
-                projectCard.classList.add('hidden');
+            // Hide the 4 card grid
+            if (actionGrid) {
+                actionGrid.classList.add('opacity-0');
+                setTimeout(() => actionGrid.classList.add('hidden'), 300);
             }
+
+            // Hide the project list if visible
+            const projectList = document.getElementById('project-list');
+            if (projectList && !projectList.classList.contains('hidden')) {
+                projectList.classList.add('hidden');
+            }
+
+            // Reset forms
+            document.getElementById('inlineProjectForm').reset();
+            document.getElementById('inlineHackathonForm').reset();
+            window.ip_techChips = []; window.ip_skillsChips = []; window.ih_techChips = [];
+            renderChips('ip_techChipsContainer', window.ip_techChips, 'ip_techChips');
+            renderChips('ip_skillsChipsContainer', window.ip_skillsChips, 'ip_skillsChips');
+            renderChips('ih_techChipsContainer', window.ih_techChips, 'ih_techChips');
+
+            projectCard.classList.add('hidden');
+            hackathonCard.classList.add('hidden');
+
+            setTimeout(() => {
+                container.classList.remove('hidden');
+                if (type === 'project') projectCard.classList.remove('hidden');
+                if (type === 'hackathon') hackathonCard.classList.remove('hidden');
+            }, 300);
         }
 
         function hideInlineForm() {
-            document.getElementById('inlineFormsContainer').classList.add('hidden');
-            document.getElementById('projectFormCard').classList.add('hidden');
-            document.getElementById('hackathonFormCard').classList.add('hidden');
+            const container = document.getElementById('inlineFormsContainer');
+            const actionGrid = document.getElementById('action-grid');
+
+            container.classList.add('hidden');
+
+            // Show the 4 card grid again
+            if (actionGrid) {
+                actionGrid.classList.remove('hidden');
+                setTimeout(() => actionGrid.classList.remove('opacity-0'), 50);
+            }
+        }
         }
 
         function handleChipInput(e, inputId, containerId, arrayName) {
@@ -424,15 +535,15 @@
             }
 
             targetArray.forEach(val => {
-                const colorStr = (containerId.includes('project') || containerId.includes('skills')) ? 'indigo' : 'cyan';
+                const colorStr = (containerId.includes('project') || containerId.includes('skills')) ? 'blue' : 'teal';
                 const div = document.createElement('div');
-                div.className = `px-2 py-1 bg-${colorStr}-500/10 border border-${colorStr}-500/20 rounded-md text-[10px] font-mono text-${colorStr}-300 flex items-center gap-1.5`;
+                div.className = `px-2 py-1 bg-${colorStr}-50 border border-${colorStr}-200 rounded-md text-[10px] font-mono text-${colorStr}-700 flex items-center gap-1.5`;
                 // Escape string properly
                 const safeVal = val.replace(/'/g, "\\'");
                 div.innerHTML = `
-                    <span>${val}</span>
-                    <button type="button" class="hover:text-white focus:outline-none" onclick="removeChip('${safeVal}', '${containerId}', '${arrayName}')">&times;</button>
-                `;
+                        <span>${val}</span>
+                        <button type="button" class="hover:text-${colorStr}-900 focus:outline-none" onclick="removeChip('${safeVal}', '${containerId}', '${arrayName}')">&times;</button>
+                    `;
                 container.appendChild(div);
             });
         }
@@ -446,9 +557,9 @@
             const title = document.getElementById('ip_title').value;
             const desc = document.getElementById('ip_desc').value;
             const reqSkills = window.ip_skillsChips.length > 0 ? window.ip_skillsChips : ["General"];
-            const techStack = window.ip_techChips.length > 0 ? `\n\nTech Stack: ${window.ip_techChips.join(', ')}` : '';
+            const techStack = window.ip_techChips.length > 0 ? `\n\nTech Stack: ${window.ip_techChips.join(', ')} ` : '';
             const dur = document.getElementById('ip_duration').value;
-            const durationTxt = dur ? `\nDuration: ${dur}` : '';
+            const durationTxt = dur ? `\nDuration: ${dur} ` : '';
 
             const detailedDesc = desc + techStack + durationTxt;
             const size = parseInt(document.getElementById('ip_size').value, 10);
@@ -487,11 +598,11 @@
             const title = document.getElementById('ih_name').value + " (Hackathon)";
             const desc = document.getElementById('ih_desc').value;
             const theme = document.getElementById('ih_theme').value;
-            const techStack = window.ih_techChips.length > 0 ? `\n\nTech Stack: ${window.ih_techChips.join(', ')}` : '';
+            const techStack = window.ih_techChips.length > 0 ? `\n\nTech Stack: ${window.ih_techChips.join(', ')} ` : '';
             const deadline = document.getElementById('ih_deadline').value;
-            const deadlineTxt = deadline ? `\nDeadline: ${deadline}` : '';
+            const deadlineTxt = deadline ? `\nDeadline: ${deadline} ` : '';
 
-            const detailedDesc = `Theme: ${theme}\n` + desc + techStack + deadlineTxt;
+            const detailedDesc = `Theme: ${theme} \n` + desc + techStack + deadlineTxt;
             const size = parseInt(document.getElementById('ih_size').value, 10);
 
             const data = { title: title, description: detailedDesc, skills_needed: window.ih_techChips.length > 0 ? window.ih_techChips : ["General"], team_size: size };

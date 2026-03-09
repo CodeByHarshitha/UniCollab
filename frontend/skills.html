@@ -11,11 +11,11 @@
 </head>
 
 <body
-    class="bg-[#020617] text-white min-h-screen relative overflow-x-hidden flex flex-col items-center justify-center p-4">
+    class="bg-gradient-to-br from-lime-50 to-emerald-50 text-slate-800 min-h-screen relative overflow-x-hidden flex flex-col items-center justify-center p-4">
 
     <!-- Glowing Orbs -->
     <div
-        class="fixed top-0 right-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cyan-900/20 via-[#020617]/0 to-transparent pointer-events-none z-0">
+        class="fixed top-0 right-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-teal-300/20 via-white/0 to-transparent pointer-events-none z-0">
     </div>
 
     <div class="w-full max-w-3xl relative z-10">
@@ -23,33 +23,34 @@
         <div class="flex items-center justify-center mb-10">
             <div class="flex flex-col items-center">
                 <div
-                    class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold shadow-[0_0_15px_rgba(99,102,241,0.5)]">
+                    class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold shadow-[0_0_15px_rgba(59,130,246,0.5)]">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                     </svg>
                 </div>
-                <span class="text-xs font-medium text-slate-500 mt-2 uppercase tracking-wide">Profile</span>
+                <span class="text-xs font-medium text-slate-400 mt-2 uppercase tracking-wide">Profile</span>
             </div>
-            <div class="w-24 h-[2px] bg-indigo-500/50 -mt-6 mx-2"></div>
+            <div class="w-24 h-[2px] bg-blue-500/50 -mt-6 mx-2"></div>
             <div class="flex flex-col items-center">
                 <div
-                    class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold shadow-[0_0_15px_rgba(99,102,241,0.5)]">
+                    class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold shadow-[0_0_15px_rgba(59,130,246,0.5)]">
                     2</div>
-                <span class="text-xs font-medium text-indigo-400 mt-2 uppercase tracking-wide">Skills & Interests</span>
+                <span class="text-xs font-medium text-blue-600 mt-2 uppercase tracking-wide">Skills & Interests</span>
             </div>
         </div>
 
-        <div class="glass-panel p-8 sm:p-10 rounded-2xl shadow-2xl relative overflow-hidden">
-            <h2 class="text-2xl font-bold text-white mb-2">Your Skills & Interests</h2>
-            <p class="text-sm text-slate-400 mb-8 border-b border-white/5 pb-4">Pick skills to help us find
+        <div
+            class="glass-panel p-8 sm:p-10 rounded-2xl shadow-xl relative overflow-hidden bg-white/70 border border-slate-200">
+            <h2 class="text-2xl font-bold text-slate-800 mb-2">Your Skills & Interests</h2>
+            <p class="text-sm text-slate-500 mb-8 border-b border-slate-200 pb-4">Pick skills to help us find
                 collaborators with similar interests.</p>
 
             <div class="space-y-6">
                 <!-- Active Skill Tags Area -->
                 <div>
-                    <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-3">Your Selected
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Your Selected
                         Skills</label>
-                    <div class="min-h-[80px] p-4 bg-slate-900/50 border border-slate-700/50 rounded-xl flex flex-wrap gap-2 items-start shadow-inner"
+                    <div class="min-h-[80px] p-4 bg-slate-50 border border-slate-200 rounded-xl flex flex-wrap gap-2 items-start shadow-inner"
                         id="selectedSkillsArea">
                         <span class="text-slate-500 text-sm italic py-1" id="emptyText">You haven't added any skills
                             yet. Start typing or pick from suggestions.</span>
@@ -58,7 +59,7 @@
 
                 <!-- Input area -->
                 <div>
-                    <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-2">Add a
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Add a
                         Skill</label>
                     <div class="flex gap-3">
                         <input type="text" id="customSkillInput"
@@ -70,9 +71,9 @@
                 </div>
 
                 <!-- Suggestions area -->
-                <div class="pt-4 border-t border-white/5">
+                <div class="pt-4 border-t border-slate-200">
                     <label
-                        class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                        class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
                         System Suggestions
                     </label>
                     <div class="flex flex-wrap gap-2" id="suggestionsContainer">
@@ -81,9 +82,9 @@
                 </div>
 
                 <div
-                    class="mt-8 pt-6 border-t border-white/5 flex flex-col sm:flex-row justify-between items-center gap-4">
+                    class="mt-8 pt-6 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-4">
                     <a href="dashboard.html"
-                        class="text-sm text-slate-500 hover:text-slate-300 transition-colors uppercase tracking-wider font-medium">Skip
+                        class="text-sm text-slate-500 hover:text-slate-800 transition-colors uppercase tracking-wider font-bold">Skip
                         Phase</a>
                     <button type="button" id="submitSkillsBtn"
                         class="btn-primary w-full sm:w-auto px-8 py-3.5 rounded-xl font-medium tracking-wide flex justify-center items-center gap-2 shadow-neon group">
@@ -120,7 +121,7 @@
         const suggestionContainer = document.getElementById('suggestionsContainer');
         presetSkills.forEach(skill => {
             const btn = document.createElement('button');
-            btn.className = 'px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-cyan-500/30 rounded-lg text-xs font-medium text-slate-300 hover:text-cyan-400 transition-all cursor-pointer';
+            btn.className = 'px-3 py-1.5 bg-white border border-slate-200 hover:border-teal-300 rounded-lg text-xs font-medium text-slate-600 hover:text-teal-600 transition-all cursor-pointer shadow-sm';
             btn.innerText = skill;
             btn.onclick = () => addSkill(skill);
             suggestionContainer.appendChild(btn);
@@ -136,10 +137,10 @@
             } else {
                 currentSkills.forEach(skill => {
                     const tag = document.createElement('div');
-                    tag.className = 'px-3 py-1.5 bg-cyan-500/10 border border-cyan-500/20 rounded-md text-xs font-medium text-cyan-300 flex items-center gap-2 shadow-[0_0_10px_rgba(34,211,238,0.05)]';
+                    tag.className = 'px-3 py-1.5 bg-teal-50 border border-teal-200 rounded-md text-xs font-bold text-teal-700 flex items-center gap-2 shadow-sm';
                     tag.innerHTML = `
                         <span class="tracking-wide">${skill}</span>
-                        <button type="button" class="w-4 h-4 rounded-full hover:bg-cyan-500/20 flex items-center justify-center text-cyan-400 hover:text-cyan-200 transition-colors" onclick="removeSkill('${skill}')">
+                        <button type="button" class="w-4 h-4 rounded-full hover:bg-teal-200 flex items-center justify-center text-teal-600 hover:text-teal-800 transition-colors" onclick="removeSkill('${skill}')">
                             &times;
                         </button>
                     `;
