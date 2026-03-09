@@ -109,25 +109,47 @@
                     <select id="course" required
                         class="cyber-input w-full px-4 py-3 rounded-xl text-sm appearance-none">
                         <option value="">Select Course...</option>
-                        <option value="B.Tech">B.Tech</option>
-                        <option value="M.Tech">M.Tech</option>
-                        <option value="BCA">BCA</option>
-                        <option value="MCA">MCA</option>
+                        <option value="B.Tech (Bachelor of Technology)">B.Tech (Bachelor of Technology)</option>
+                        <option value="B.E. (Bachelor of Engineering)">B.E. (Bachelor of Engineering)</option>
+                        <option value="B.Sc. (Bachelor of Science)">B.Sc. (Bachelor of Science)</option>
+                        <option value="BCA (Bachelor of Computer Applications)">BCA (Bachelor of Computer Applications)
+                        </option>
+                        <option value="MCA (Master of Computer Applications)">MCA (Master of Computer Applications)
+                        </option>
+                        <option value="M.Tech (Master of Technology)">M.Tech (Master of Technology)</option>
+                        <option value="MBA (Master of Business Administration)">MBA (Master of Business Administration)
+                        </option>
                     </select>
                 </div>
 
                 <div class="space-y-2">
                     <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider">Specialization /
                         Focus Area</label>
-                    <select id="specialization" required
-                        class="cyber-input w-full px-4 py-3 rounded-xl text-sm appearance-none">
-                        <option value="">Select Specialization...</option>
-                        <option value="Computer Science Engineering">Computer Science Engineering</option>
-                        <option value="Artificial Intelligence">Artificial Intelligence</option>
+                    <select id="specialization" required onchange="toggleCustomSpecialization()"
+                        class="cyber-input w-full px-4 py-3 rounded-xl text-sm appearance-none mb-3">
+                        <option value="">Select Specialization / Focus Area...</option>
+                        <option value="Artificial Intelligence & Machine Learning (AI/ML)">Artificial Intelligence &
+                            Machine Learning (AI/ML)</option>
                         <option value="Data Science">Data Science</option>
-                        <option value="Cyber Security">Cyber Security</option>
-                        <option value="General">General / None</option>
+                        <option value="Web Development">Web Development</option>
+                        <option value="Mobile App Development">Mobile App Development</option>
+                        <option value="Cybersecurity">Cybersecurity</option>
+                        <option value="Cloud Computing">Cloud Computing</option>
+                        <option value="Computer Networks">Computer Networks</option>
+                        <option value="Embedded Systems">Embedded Systems</option>
+                        <option value="IoT (Internet of Things)">IoT (Internet of Things)</option>
+                        <option value="Robotics / Mechatronics">Robotics / Mechatronics</option>
+                        <option value="Blockchain">Blockchain</option>
+                        <option value="Full Stack Development">Full Stack Development</option>
+                        <option value="Software Engineering">Software Engineering</option>
+                        <option value="Game Development">Game Development</option>
+                        <option value="UI/UX Design">UI/UX Design</option>
+                        <option value="Digital Marketing">Digital Marketing</option>
+                        <option value="Other / Custom">Other / Custom</option>
                     </select>
+                    <input type="text" id="custom_specialization"
+                        class="cyber-input w-full px-4 py-3 rounded-xl text-sm hidden mt-2"
+                        placeholder="Please specify your specialization...">
                 </div>
 
                 <div class="pt-6 mt-6 border-t border-white/5">
@@ -159,12 +181,24 @@
             btn.innerHTML = '<span>Saving...</span>';
             btn.disabled = true;
 
+            let finalSpecialization = document.getElementById('specialization').value;
+            if (finalSpecialization === 'Other / Custom') {
+                finalSpecialization = document.getElementById('custom_specialization').value.trim();
+                if (!finalSpecialization) {
+                    errorDiv.textContent = "Please specify your custom specialization.";
+                    errorDiv.classList.remove('hidden');
+                    btn.innerHTML = '<span>Save & Proceed</span>';
+                    btn.disabled = false;
+                    return;
+                }
+            }
+
             const profileData = {
                 name: document.getElementById('full_name').value,
                 department: document.getElementById('department').value,
                 year_of_study: document.getElementById('year_of_study').value,
                 course: document.getElementById('course').value,
-                specialization: document.getElementById('specialization').value,
+                specialization: finalSpecialization,
                 graduation_year: document.getElementById('graduation_year').value,
                 skills: [],
                 interests: []
@@ -180,6 +214,19 @@
                 btn.disabled = false;
             }
         });
+
+        function toggleCustomSpecialization() {
+            const select = document.getElementById('specialization');
+            const customInput = document.getElementById('custom_specialization');
+            if (select.value === 'Other / Custom') {
+                customInput.classList.remove('hidden');
+                customInput.setAttribute('required', 'required');
+            } else {
+                customInput.classList.add('hidden');
+                customInput.removeAttribute('required');
+                customInput.value = '';
+            }
+        }
     </script>
 </body>
 
