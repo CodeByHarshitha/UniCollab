@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Start a Project | UniCollab.</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+
+<body class="bg-gradient-to-br from-lime-50 to-emerald-50 text-slate-800 min-h-screen">
+
+    <nav class="sticky top-0 z-50 backdrop-blur-xl bg-white/80 border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Left: Logo & Links -->
+                <div class="flex items-center gap-8">
+                    <!-- Brand -->
+                    <a href="dashboard.html" class="flex items-center gap-2 group">
+                        <img src="static/images/logo.svg" alt="logo"
+                            class="w-6 h-6 group-hover:scale-110 transition-transform hidden">
+                        <span
+                            class="font-bold text-lg tracking-tight text-slate-800 group-hover:text-blue-600 transition-colors">UniCollab.</span>
+                    </a>
+
+                    <!-- App Navigation -->
+                    <div class="flex items-center space-x-1">
+                        <a href="dashboard.html"
+                            class="px-3 py-2 rounded-lg text-sm font-medium transition-colors text-slate-500 hover:text-blue-600 hover:bg-blue-50/50">Dashboard</a>
+                        <a href="explore.html"
+                            class="px-3 py-2 rounded-lg text-sm font-medium transition-colors text-slate-500 hover:text-teal-600 hover:bg-teal-50/50">Discover</a>
+                    </div>
+                </div>
+
+                <!-- Right: User & Actions -->
+                <div class="flex items-center gap-4">
+                    <div
+                        class="hidden sm:flex items-center gap-3 bg-white px-3 py-1.5 rounded-full border border-slate-200 shadow-sm">
+                        <div
+                            class="w-6 h-6 rounded-full bg-blue-100 border border-blue-200 flex justify-center items-center text-blue-600 font-bold text-[10px] uppercase">
+                            <span id="nav-user-initial">U</span>
+                        </div>
+                        <span id="nav-user-name" class="text-sm font-bold text-slate-700"></span>
+                    </div>
+                    <div class="h-4 w-px bg-slate-200 hidden sm:block"></div>
+                    <button onclick="API.logout()"
+                        class="text-xs text-slate-500 hover:text-red-500 transition-colors uppercase tracking-widest font-bold">Log
+                        Off</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-3xl mx-auto p-4 md:p-8 mt-6">
+
+        <div class="mb-8">
+            <a href="dashboard.html"
+                class="text-xs font-bold text-slate-500 hover:text-blue-600 uppercase tracking-widest flex items-center gap-1 mb-4 transition-colors">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Back to Dashboard
+            </a>
+            <h1 class="text-3xl font-bold text-slate-800 tracking-tight">Start a New Project</h1>
+            <p class="text-slate-500 mt-2">Initialize a new operation, define your tech stack, and recruit top peers.
+            </p>
+        </div>
+
+        <div
+            class="glass-panel p-6 sm:p-8 rounded-2xl border-t-4 border-t-blue-500 shadow-xl bg-white/70 border border-slate-200 relative overflow-hidden">
+            <div class="absolute -right-20 -top-20 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl pointer-events-none">
+            </div>
+
+            <form id="standaloneProjectForm" class="space-y-6 relative z-10">
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest">Project
+                        Title</label>
+                    <input type="text" id="ip_title" required
+                        class="cyber-input w-full px-4 py-3 rounded-lg text-sm text-slate-800 placeholder:text-slate-400"
+                        placeholder="E.g., Neural Network UI">
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest">Description</label>
+                    <textarea id="ip_desc" required
+                        class="cyber-input w-full px-4 py-3 rounded-lg text-sm min-h-[120px] text-slate-800 placeholder:text-slate-400"
+                        placeholder="Brief context and goals of the project..."></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest">Tech
+                            Stack</label>
+                        <div class="relative">
+                            <input type="text" id="ip_techInput"
+                                class="cyber-input w-full px-4 py-3 rounded-lg text-sm font-mono placeholder:font-sans text-slate-800 placeholder:text-slate-400 focus:border-blue-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.1)] transition-all"
+                                placeholder="Type tech & press Enter"
+                                onkeydown="handleChipInput(event, 'ip_techInput', 'ip_techChipsContainer', 'ip_techChips')">
+                            <div id="ip_techChipsContainer"
+                                class="flex flex-wrap gap-2 mt-3 min-h-[44px] p-2 bg-slate-50 rounded-xl border border-slate-200">
+                                <span class="text-slate-400 text-[10px] italic py-2 px-2" id="ip_techEmpty">No items
+                                    added.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest">Required
+                            Skills</label>
+                        <div class="relative">
+                            <input type="text" id="ip_skillsInput"
+                                class="cyber-input w-full px-4 py-3 rounded-lg text-sm font-mono placeholder:font-sans text-slate-800 placeholder:text-slate-400 focus:border-blue-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.1)] transition-all"
+                                placeholder="Type skill & press Enter"
+                                onkeydown="handleChipInput(event, 'ip_skillsInput', 'ip_skillsChipsContainer', 'ip_skillsChips')">
+                            <div id="ip_skillsChipsContainer"
+                                class="flex flex-wrap gap-2 mt-3 min-h-[44px] p-2 bg-slate-50 rounded-xl border border-slate-200">
+                                <span class="text-slate-400 text-[10px] italic py-2 px-2" id="ip_skillsEmpty">No items
+                                    added.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest">Duration</label>
+                        <select id="ip_duration" required
+                            class="cyber-input w-full px-4 py-3 rounded-lg text-sm appearance-none flex text-slate-800">
+                            <option value="">Select duration...</option>
+                            <option value="< 1 Month">&lt; 1 Month</option>
+                            <option value="1-3 Months">1-3 Months</option>
+                            <option value="3-6 Months">3-6 Months</option>
+                            <option value="6+ Months">6+ Months</option>
+                        </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest">Team Size
+                            Limit</label>
+                        <input type="number" id="ip_size" required min="1" max="10"
+                            class="cyber-input w-full px-4 py-3 rounded-lg text-sm text-slate-800" value="4">
+                    </div>
+                </div>
+
+                <!-- Error Display -->
+                <div id="form-error"
+                    class="hidden text-sm font-bold text-red-500 bg-red-50 p-3 rounded-lg border border-red-200 text-center">
+                </div>
+
+                <div class="pt-6 mt-6 border-t border-slate-200 flex justify-end gap-4">
+                    <a href="dashboard.html"
+                        class="px-6 py-3 rounded-xl text-sm font-bold text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors flex items-center justify-center">Cancel</a>
+                    <button type="submit" id="ip_submitBtn"
+                        class="btn-primary px-8 py-3 rounded-xl text-sm font-bold tracking-wide shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                        Broadcast Project
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        enforceAuth();
+        const user = API.getUser();
+        if (user && user.name) {
+            document.getElementById('nav-user-name').innerText = user.name;
+            document.getElementById('nav-user-initial').innerText = user.name.charAt(0).toUpperCase();
+        }
+
+        // State for Multi-Select Chips
+        window.ip_techChips = [];
+        window.ip_skillsChips = [];
+
+        function renderChips(containerId, arrayRefName) {
+            const container = document.getElementById(containerId);
+            const array = window[arrayRefName];
+            const emptyTextId = containerId.replace('Container', 'Empty');
+            const emptyEl = document.getElementById(emptyTextId);
+
+            // Clear existing chips but keep empty hint if needed
+            Array.from(container.children).forEach(child => {
+                if (child.id !== emptyTextId) child.remove();
+            });
+
+            if (array.length === 0) {
+                if (emptyEl) emptyEl.style.display = 'block';
+            } else {
+                if (emptyEl) emptyEl.style.display = 'none';
+                array.forEach(item => {
+                    const chip = document.createElement('div');
+                    chip.className = 'px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-lg text-xs font-bold text-blue-700 flex items-center gap-2 shadow-sm';
+                    chip.innerHTML = `
+                        <span>${item}</span>
+                        <button type="button" class="w-4 h-4 rounded-full hover:bg-blue-200 flex justify-center items-center text-blue-600 transition-colors" onclick="removeChip('${item}', '${containerId}', '${arrayRefName}')">&times;</button>
+                    `;
+                    container.appendChild(chip);
+                });
+            }
+        }
+
+        window.removeChip = function (item, containerId, arrayRefName) {
+            window[arrayRefName] = window[arrayRefName].filter(i => i !== item);
+            renderChips(containerId, arrayRefName);
+        }
+
+        window.handleChipInput = function (e, inputId, containerId, arrayRefName) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const val = document.getElementById(inputId).value.trim();
+                const array = window[arrayRefName];
+                if (val && !array.includes(val)) {
+                    array.push(val);
+                    renderChips(containerId, arrayRefName);
+                }
+                document.getElementById(inputId).value = '';
+            }
+        }
+
+        document.getElementById('standaloneProjectForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('ip_submitBtn');
+            const errorDiv = document.getElementById('form-error');
+
+            const title = document.getElementById('ip_title').value;
+            const desc = document.getElementById('ip_desc').value;
+            const duration = document.getElementById('ip_duration').value;
+            const size = document.getElementById('ip_size').value;
+
+            if (window.ip_skillsChips.length === 0) {
+                errorDiv.innerText = "Please add at least one required skill.";
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            btn.innerHTML = 'Broadcasting...';
+            btn.disabled = true;
+            errorDiv.classList.add('hidden');
+
+            try {
+                await API.createProject(title, desc, window.ip_skillsChips, parseInt(size));
+
+                // Success animate
+                btn.innerHTML = 'Operation Live!';
+                btn.classList.replace('btn-primary', 'bg-emerald-500');
+                btn.classList.add('text-white');
+
+                setTimeout(() => {
+                    window.location.href = 'join_project.html'; // Redirect to feed
+                }, 1000);
+            } catch (err) {
+                errorDiv.innerText = err.message || "Failed to broadcast project.";
+                errorDiv.classList.remove('hidden');
+                btn.innerHTML = 'Broadcast Project';
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+
+</html>

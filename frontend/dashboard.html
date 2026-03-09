@@ -64,7 +64,7 @@
         <div id="action-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10 transition-all duration-500">
 
             <!-- Card 1: Start Project -->
-            <div onclick="showInlineForm('project')"
+            <div onclick="window.location.href='create_project.html'"
                 class="glass-panel p-8 rounded-2xl border-t-4 border-t-blue-500 hover:-translate-y-2 transition-transform duration-300 shadow-lg group cursor-pointer relative overflow-hidden">
                 <div
                     class="absolute -right-10 -top-10 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-all">
@@ -89,7 +89,7 @@
             </div>
 
             <!-- Card 2: Join Project -->
-            <div onclick="window.location.href='explore.html'"
+            <div onclick="window.location.href='join_project.html'"
                 class="glass-panel p-8 rounded-2xl border-t-4 border-t-indigo-500 hover:-translate-y-2 transition-transform duration-300 shadow-lg group cursor-pointer relative overflow-hidden">
                 <div
                     class="absolute -right-10 -top-10 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl group-hover:bg-indigo-500/20 transition-all">
@@ -116,7 +116,7 @@
             </div>
 
             <!-- Card 3: Organize Hackathon -->
-            <div onclick="showInlineForm('hackathon')"
+            <div onclick="window.location.href='create_hackathon.html'"
                 class="glass-panel p-8 rounded-2xl border-t-4 border-t-teal-500 hover:-translate-y-2 transition-transform duration-300 shadow-lg group cursor-pointer relative overflow-hidden">
                 <div
                     class="absolute -right-10 -top-10 w-32 h-32 bg-teal-500/10 rounded-full blur-2xl group-hover:bg-teal-500/20 transition-all">
@@ -142,7 +142,7 @@
             </div>
 
             <!-- Card 4: Join Hackathon -->
-            <div onclick="alert('Hackathon network coming soon!')"
+            <div onclick="window.location.href='join_hackathon.html'"
                 class="glass-panel p-8 rounded-2xl border-t-4 border-t-emerald-500 hover:-translate-y-2 transition-transform duration-300 shadow-lg group cursor-pointer relative overflow-hidden">
                 <div
                     class="absolute -right-10 -top-10 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all">
@@ -171,175 +171,7 @@
 
         </div>
 
-        <!-- Inline Forms Container -->
-        <div id="inlineFormsContainer" class="hidden mb-10 overflow-hidden transition-all duration-500 ease-in-out">
-            <!-- Project Form Card -->
-            <div id="projectFormCard"
-                class="hidden glass-panel p-6 sm:p-8 rounded-2xl border-l-4 border-l-blue-500 relative">
-                <button onclick="hideInlineForm()"
-                    class="absolute top-4 right-4 text-slate-400 hover:text-red-500 transition-colors">&times;</button>
-                <h2 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                        </path>
-                    </svg>
-                    Start a New Project
-                </h2>
-                <form id="inlineProjectForm" class="space-y-5">
-                    <div class="space-y-2">
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest">Project
-                            Title</label>
-                        <input type="text" id="ip_title" required
-                            class="cyber-input w-full px-4 py-3 rounded-lg text-sm"
-                            placeholder="E.g., Neural Network UI">
-                    </div>
-                    <div class="space-y-2">
-                        <label
-                            class="block text-xs font-bold text-slate-500 uppercase tracking-widest">Description</label>
-                        <textarea id="ip_desc" required
-                            class="cyber-input w-full px-4 py-3 rounded-lg text-sm min-h-[80px]"
-                            placeholder="Brief context..."></textarea>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div class="space-y-2">
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest">Tech
-                                Stack</label>
-                            <div class="relative">
-                                <input type="text" id="ip_techInput"
-                                    class="cyber-input w-full px-4 py-3 rounded-lg text-sm font-mono placeholder:font-sans"
-                                    placeholder="Type tech & press Enter"
-                                    onkeydown="handleChipInput(event, 'ip_techInput', 'ip_techChipsContainer', 'ip_techChips')">
-                                <div id="ip_techChipsContainer"
-                                    class="flex flex-wrap gap-2 mt-3 min-h-[30px] p-2 bg-slate-50/50 rounded-lg border border-slate-200">
-                                    <span class="text-slate-400 text-[10px] italic py-1 px-2">No items added.</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest">Required
-                                Skills</label>
-                            <div class="relative">
-                                <input type="text" id="ip_skillsInput"
-                                    class="cyber-input w-full px-4 py-3 rounded-lg text-sm font-mono placeholder:font-sans"
-                                    placeholder="Type skill & press Enter"
-                                    onkeydown="handleChipInput(event, 'ip_skillsInput', 'ip_skillsChipsContainer', 'ip_skillsChips')">
-                                <div id="ip_skillsChipsContainer"
-                                    class="flex flex-wrap gap-2 mt-3 min-h-[30px] p-2 bg-slate-50/50 rounded-lg border border-slate-200">
-                                    <span class="text-slate-400 text-[10px] italic py-1 px-2">No items added.</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div class="space-y-2">
-                            <label
-                                class="block text-xs font-bold text-slate-500 uppercase tracking-widest">Duration</label>
-                            <select id="ip_duration" required
-                                class="cyber-input w-full px-4 py-3 rounded-lg text-sm appearance-none flex">
-                                <option value="">Select duration...</option>
-                                <option value="< 1 Month">&lt; 1 Month</option>
-                                <option value="1-3 Months">1-3 Months</option>
-                                <option value="3-6 Months">3-6 Months</option>
-                                <option value="6+ Months">6+ Months</option>
-                            </select>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest">Team Size
-                                Limit</label>
-                            <input type="number" id="ip_size" required min="1" max="10"
-                                class="cyber-input w-full px-4 py-3 rounded-lg text-sm" value="4">
-                        </div>
-                    </div>
-
-                    <div class="pt-4 border-t border-slate-200 flex justify-end gap-3">
-                        <button type="button" onclick="hideInlineForm()"
-                            class="px-6 py-2.5 rounded-lg text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors">Cancel</button>
-                        <button type="submit" id="ip_submitBtn"
-                            class="btn-primary px-8 py-2.5 rounded-lg text-sm font-bold tracking-wide">Broadcast
-                            Project</button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Hackathon Form Card -->
-            <div id="hackathonFormCard"
-                class="hidden glass-panel p-6 sm:p-8 rounded-2xl border-l-4 border-l-teal-500 relative">
-                <button onclick="hideInlineForm()"
-                    class="absolute top-4 right-4 text-slate-400 hover:text-red-500 transition-colors">&times;</button>
-                <h2 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                    </svg>
-                    Organize Hackathon
-                </h2>
-                <form id="inlineHackathonForm" class="space-y-5">
-                    <div class="space-y-2">
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest">Hackathon
-                            Name</label>
-                        <input type="text" id="ih_name" required class="cyber-input w-full px-4 py-3 rounded-lg text-sm"
-                            placeholder="E.g., Web3 Innovators Hack">
-                    </div>
-                    <div class="space-y-2">
-                        <label
-                            class="block text-xs font-bold text-slate-500 uppercase tracking-widest">Description</label>
-                        <textarea id="ih_desc" required
-                            class="cyber-input w-full px-4 py-3 rounded-lg text-sm min-h-[80px]"
-                            placeholder="Event goals, prizes, details..."></textarea>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div class="space-y-2">
-                            <label
-                                class="block text-xs font-bold text-slate-500 uppercase tracking-widest">Theme</label>
-                            <input type="text" id="ih_theme" required
-                                class="cyber-input w-full px-4 py-3 rounded-lg text-sm"
-                                placeholder="E.g., Decentralized Finance">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest">Tech Stack
-                                (Optional)</label>
-                            <div class="relative">
-                                <input type="text" id="ih_techInput"
-                                    class="cyber-input w-full px-4 py-3 rounded-lg text-sm font-mono placeholder:font-sans"
-                                    placeholder="Type tech & press Enter"
-                                    onkeydown="handleChipInput(event, 'ih_techInput', 'ih_techChipsContainer', 'ih_techChips')">
-                                <div id="ih_techChipsContainer"
-                                    class="flex flex-wrap gap-2 mt-3 min-h-[30px] p-2 bg-slate-50/50 rounded-lg border border-slate-200">
-                                    <span class="text-slate-400 text-[10px] italic py-1 px-2">No items added.</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div class="space-y-2">
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest">Team Size
-                                (Max)</label>
-                            <input type="number" id="ih_size" required min="1" max="10"
-                                class="cyber-input w-full px-4 py-3 rounded-lg text-sm" value="4">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest">Registration
-                                Deadline</label>
-                            <input type="date" id="ih_deadline" required
-                                class="cyber-input w-full px-4 py-3 rounded-lg text-sm text-slate-600 pattern-date flex">
-                        </div>
-                    </div>
-
-                    <div class="pt-4 border-t border-slate-200 flex justify-end gap-3">
-                        <button type="button" onclick="hideInlineForm()"
-                            class="px-6 py-2.5 rounded-lg text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors">Cancel</button>
-                        <button type="submit" id="ih_submitBtn"
-                            class="bg-teal-500 hover:bg-teal-400 text-white px-8 py-2.5 rounded-lg text-sm font-bold tracking-wide shadow-[0_0_15px_rgba(20,184,166,0.4)] hover:shadow-[0_0_25px_rgba(20,184,166,0.6)] transition-all">Launch
-                            Hackathon</button>
-                    </div>
-                </form>
-            </div>
-        </div>
+        <!-- Inline Forms Container Deleted (Moved to Standalone Pages) -->
 
         <div id="loading" class="text-center py-10 text-slate-500 font-mono animate-pulse hidden">Loading operations...
         </div>
@@ -416,217 +248,7 @@
             }
         }
 
-        // State for Multi-Select Chips
-        window.ip_techChips = [];
-        window.ip_skillsChips = [];
-        window.ih_techChips = [];
 
-        function toggleDropdown() {
-            const dropdown = document.getElementById('createNewDropdown');
-            if (dropdown.classList.contains('hidden')) {
-                dropdown.classList.remove('hidden');
-                setTimeout(() => {
-                    dropdown.classList.remove('opacity-0', 'scale-95');
-                    dropdown.classList.add('opacity-100', 'scale-100');
-                }, 10);
-            } else {
-                dropdown.classList.remove('opacity-100', 'scale-100');
-                dropdown.classList.add('opacity-0', 'scale-95');
-                setTimeout(() => dropdown.classList.add('hidden'), 200);
-            }
-        }
-
-        document.addEventListener('click', (e) => {
-            const btn = document.getElementById('createNewBtn');
-            const dropdown = document.getElementById('createNewDropdown');
-            if (btn && dropdown && !btn.contains(e.target) && !dropdown.contains(e.target)) {
-                if (!dropdown.classList.contains('hidden')) toggleDropdown();
-            }
-        });
-
-        function showInlineForm(type) {
-            const dropdown = document.getElementById('createNewDropdown');
-            if (dropdown) {
-                dropdown.classList.remove('opacity-100', 'scale-100');
-                dropdown.classList.add('opacity-0', 'scale-95');
-                setTimeout(() => dropdown.classList.add('hidden'), 200);
-            }
-
-            const container = document.getElementById('inlineFormsContainer');
-            const projectCard = document.getElementById('projectFormCard');
-            const hackathonCard = document.getElementById('hackathonFormCard');
-            const actionGrid = document.getElementById('action-grid');
-
-            // Hide the 4 card grid
-            if (actionGrid) {
-                actionGrid.classList.add('opacity-0');
-                setTimeout(() => actionGrid.classList.add('hidden'), 300);
-            }
-
-            // Hide the project list if visible
-            const projectList = document.getElementById('project-list');
-            if (projectList && !projectList.classList.contains('hidden')) {
-                projectList.classList.add('hidden');
-            }
-
-            // Reset forms
-            document.getElementById('inlineProjectForm').reset();
-            document.getElementById('inlineHackathonForm').reset();
-            window.ip_techChips = []; window.ip_skillsChips = []; window.ih_techChips = [];
-            renderChips('ip_techChipsContainer', window.ip_techChips, 'ip_techChips');
-            renderChips('ip_skillsChipsContainer', window.ip_skillsChips, 'ip_skillsChips');
-            renderChips('ih_techChipsContainer', window.ih_techChips, 'ih_techChips');
-
-            projectCard.classList.add('hidden');
-            hackathonCard.classList.add('hidden');
-
-            setTimeout(() => {
-                container.classList.remove('hidden');
-                if (type === 'project') projectCard.classList.remove('hidden');
-                if (type === 'hackathon') hackathonCard.classList.remove('hidden');
-            }, 300);
-        }
-
-        function hideInlineForm() {
-            const container = document.getElementById('inlineFormsContainer');
-            const actionGrid = document.getElementById('action-grid');
-
-            container.classList.add('hidden');
-
-            // Show the 4 card grid again
-            if (actionGrid) {
-                actionGrid.classList.remove('hidden');
-                setTimeout(() => actionGrid.classList.remove('opacity-0'), 50);
-            }
-        }
-        }
-
-        function handleChipInput(e, inputId, containerId, arrayName) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                const input = document.getElementById(inputId);
-                const val = input.value.trim();
-                const targetArray = window[arrayName];
-                if (val && !targetArray.includes(val)) {
-                    targetArray.push(val);
-                    renderChips(containerId, arrayName);
-                }
-                input.value = '';
-            }
-        }
-
-        function removeChip(val, containerId, arrayName) {
-            const targetArray = window[arrayName];
-            const index = targetArray.indexOf(val);
-            if (index > -1) {
-                targetArray.splice(index, 1);
-                renderChips(containerId, arrayName);
-            }
-        }
-
-        function renderChips(containerId, arrayName) {
-            const targetArray = window[arrayName];
-            const container = document.getElementById(containerId);
-            container.innerHTML = '';
-
-            if (targetArray.length === 0) {
-                container.innerHTML = `<span class="text-slate-600 text-[10px] italic py-1 px-2">No items added.</span>`;
-                return;
-            }
-
-            targetArray.forEach(val => {
-                const colorStr = (containerId.includes('project') || containerId.includes('skills')) ? 'blue' : 'teal';
-                const div = document.createElement('div');
-                div.className = `px-2 py-1 bg-${colorStr}-50 border border-${colorStr}-200 rounded-md text-[10px] font-mono text-${colorStr}-700 flex items-center gap-1.5`;
-                // Escape string properly
-                const safeVal = val.replace(/'/g, "\\'");
-                div.innerHTML = `
-                        <span>${val}</span>
-                        <button type="button" class="hover:text-${colorStr}-900 focus:outline-none" onclick="removeChip('${safeVal}', '${containerId}', '${arrayName}')">&times;</button>
-                    `;
-                container.appendChild(div);
-            });
-        }
-
-        document.getElementById('inlineProjectForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('ip_submitBtn');
-            btn.innerHTML = 'Broadcasting...';
-            btn.disabled = true;
-
-            const title = document.getElementById('ip_title').value;
-            const desc = document.getElementById('ip_desc').value;
-            const reqSkills = window.ip_skillsChips.length > 0 ? window.ip_skillsChips : ["General"];
-            const techStack = window.ip_techChips.length > 0 ? `\n\nTech Stack: ${window.ip_techChips.join(', ')} ` : '';
-            const dur = document.getElementById('ip_duration').value;
-            const durationTxt = dur ? `\nDuration: ${dur} ` : '';
-
-            const detailedDesc = desc + techStack + durationTxt;
-            const size = parseInt(document.getElementById('ip_size').value, 10);
-
-            const data = { title: title, description: detailedDesc, skills_needed: reqSkills, team_size: size };
-
-            try {
-                await API.createProject(data);
-                hideInlineForm();
-                document.getElementById('inlineProjectForm').reset();
-                window.ip_skillsChips = [];
-                window.ip_techChips = [];
-                renderChips('ip_techChipsContainer', 'ip_techChips');
-                renderChips('ip_skillsChipsContainer', 'ip_skillsChips');
-
-                btn.innerHTML = 'Broadcast Project';
-                btn.disabled = false;
-
-                document.getElementById('project-list').classList.add('hidden');
-                document.getElementById('loading').classList.remove('hidden');
-                document.getElementById('no-projects').classList.add('hidden');
-                loadProjects();
-            } catch (err) {
-                alert("Creation failed: " + err.message);
-                btn.innerHTML = 'Broadcast Project';
-                btn.disabled = false;
-            }
-        });
-
-        document.getElementById('inlineHackathonForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('ih_submitBtn');
-            btn.innerHTML = 'Launching...';
-            btn.disabled = true;
-
-            const title = document.getElementById('ih_name').value + " (Hackathon)";
-            const desc = document.getElementById('ih_desc').value;
-            const theme = document.getElementById('ih_theme').value;
-            const techStack = window.ih_techChips.length > 0 ? `\n\nTech Stack: ${window.ih_techChips.join(', ')} ` : '';
-            const deadline = document.getElementById('ih_deadline').value;
-            const deadlineTxt = deadline ? `\nDeadline: ${deadline} ` : '';
-
-            const detailedDesc = `Theme: ${theme} \n` + desc + techStack + deadlineTxt;
-            const size = parseInt(document.getElementById('ih_size').value, 10);
-
-            const data = { title: title, description: detailedDesc, skills_needed: window.ih_techChips.length > 0 ? window.ih_techChips : ["General"], team_size: size };
-
-            try {
-                await API.createProject(data);
-                hideInlineForm();
-                document.getElementById('inlineHackathonForm').reset();
-                window.ih_techChips = [];
-                renderChips('ih_techChipsContainer', 'ih_techChips');
-
-                btn.innerHTML = 'Launch Hackathon';
-                btn.disabled = false;
-
-                document.getElementById('project-list').classList.add('hidden');
-                document.getElementById('loading').classList.remove('hidden');
-                document.getElementById('no-projects').classList.add('hidden');
-                loadProjects();
-            } catch (err) {
-                alert("Launch failed: " + err.message);
-                btn.innerHTML = 'Launch Hackathon';
-                btn.disabled = false;
-            }
-        });
 
         loadProjects();
     </script>
