@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Status | UniCollab.</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+
+<body class="bg-gradient-to-br from-lime-50 to-emerald-50 text-slate-800 min-h-screen relative overflow-x-hidden">
+
+    <!-- Unified Navbar -->
+    <nav class="sticky top-0 z-50 backdrop-blur-xl bg-white/80 border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Left: Logo & Links -->
+                <div class="flex items-center gap-8">
+                    <!-- Brand (Text Only, Bold, Larger, Modern Minimal) -->
+                    <a href="dashboard.html" class="flex items-center group">
+                        <span
+                            class="font-bold text-2xl tracking-tighter text-slate-800 group-hover:text-teal-500 transition-colors">UniCollab.</span>
+                    </a>
+
+                    <!-- App Navigation -->
+                    <div class="flex items-center space-x-1">
+                        <a href="dashboard.html"
+                            class="px-3 py-2 rounded-lg text-sm font-medium transition-colors text-slate-600 hover:text-teal-600 hover:bg-teal-50">Dashboard</a>
+                        <a href="explore.html"
+                            class="px-3 py-2 rounded-lg text-sm font-medium transition-colors text-slate-600 hover:text-teal-600 hover:bg-teal-50">Discover</a>
+                        <a href="my_projects.html"
+                            class="px-3 py-2 rounded-lg text-sm font-medium transition-colors text-slate-600 hover:text-teal-600 hover:bg-teal-50">My
+                            Projects</a>
+                    </div>
+                </div>
+
+                <!-- Right: User & Actions -->
+                <div class="flex items-center gap-4">
+                    <!-- Profile Icon (Routes to Profile Page) -->
+                    <a href="profile.html"
+                        class="flex items-center justify-center w-9 h-9 rounded-full bg-slate-100 hover:bg-teal-100 text-slate-600 hover:text-teal-600 transition-colors border border-slate-200 shadow-sm group">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                    </a>
+
+                    <div class="h-4 w-px bg-slate-200 hidden sm:block"></div>
+
+                    <!-- Log Out Button -->
+                    <button onclick="API.logout()"
+                        class="text-xs text-slate-500 hover:text-red-500 transition-colors uppercase tracking-widest font-bold">
+                        Log Out
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-5xl mx-auto p-4 md:p-8 mt-6">
+
+        <!-- Breadcrumb & Toast -->
+        <a href="my_projects.html"
+            class="inline-flex items-center text-sm font-bold text-slate-500 hover:text-teal-600 transition-colors mb-6 group">
+            <svg class="w-4 h-4 mr-1 transform group-hover:-translate-x-1 transition-transform" fill="none"
+                stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            Back to My Projects
+        </a>
+
+        <div id="toastMessage"
+            class="hidden transform -translate-y-4 opacity-0 transition-all duration-300 fixed top-24 left-1/2 -translate-x-1/2 z-50 text-sm font-bold px-6 py-3 rounded-full shadow-lg border">
+            <!-- Toast Content -->
+        </div>
+
+        <div id="loading" class="flex justify-center items-center py-20 hidden">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-500"></div>
+        </div>
+
+        <div id="error"
+            class="hidden text-center py-20 bg-red-50 text-red-600 rounded-2xl border border-red-200 font-bold shadow-sm">
+            Failed to load project details. It may not exist or you don't have permission to view it.
+        </div>
+
+        <div id="dashboardContent" class="hidden space-y-8">
+
+            <!-- Context Header -->
+            <div class="glass-panel p-8 rounded-2xl shadow-sm border border-slate-200 bg-white/70">
+                <div class="flex flex-col md:flex-row md:items-start justify-between gap-6">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-3">
+                            <h1 class="text-3xl font-bold text-slate-800 tracking-tight" id="projTitle">Project Title
+                            </h1>
+                            <span id="projStatus"
+                                class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Status</span>
+                        </div>
+                        <p class="text-slate-600 leading-relaxed mb-6" id="projDesc">Project description...</p>
+
+                        <div class="flex flex-wrap items-center gap-x-8 gap-y-4 text-sm">
+                            <div>
+                                <span
+                                    class="text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5 mb-2"><svg
+                                        class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 4v16m8-8H4"></path>
+                                    </svg>Required Skills</span>
+                                <div id="projSkills" class="flex flex-wrap gap-2"></div>
+                            </div>
+
+                            <!-- Divider (if not wrapping) -->
+                            <div class="hidden md:block w-px h-10 bg-slate-200"></div>
+
+                            <div>
+                                <span
+                                    class="text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5 mb-2"><svg
+                                        class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                                        </path>
+                                    </svg>Team Capacity</span>
+                                <p class="font-bold text-slate-700 text-lg flex items-baseline gap-1"><span
+                                        id="memCount">1</span> <span class="text-slate-400 text-sm font-medium">/ <span
+                                            id="teamSize">4</span></span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Split Layout -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+                <!-- Left Col: Requests -->
+                <div class="lg:col-span-2 space-y-4">
+                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <span>Join Requests</span>
+                        <span id="reqBadge"
+                            class="bg-teal-100 text-teal-700 py-0.5 px-2.5 rounded-full text-xs font-bold leading-5">0</span>
+                    </h2>
+
+                    <div id="requestsList" class="space-y-4">
+                        <!-- Request Cards dynamically inserted -->
+                    </div>
+                </div>
+
+                <!-- Right Col: Team Members -->
+                <div class="space-y-4">
+                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <span>Team Members</span>
+                    </h2>
+
+                    <div class="glass-panel bg-white/50 border border-slate-200 rounded-2xl overflow-hidden divide-y divide-slate-100"
+                        id="teamList">
+                        <!-- Team Members dynamically inserted -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Templates -->
+    <template id="requestCardTemplate">
+        <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6 transition-colors hover:border-teal-200 group"
+            data-req-id="">
+            <div class="flex items-center gap-4 flex-1">
+                <div class="h-12 w-12 rounded-full bg-gradient-to-br from-teal-400 to-blue-500 text-white flex items-center justify-center font-bold text-lg shadow-inner flex-shrink-0"
+                    data-ref="avatar">A</div>
+                <div class="flex-1 min-w-0">
+                    <h4 class="text-base font-bold text-slate-800 flex items-center gap-2" data-ref="name">Name</h4>
+                    <p class="text-xs text-slate-500 mt-1 mb-2 font-medium" data-ref="academic">Department &bull; Year
+                    </p>
+                    <div class="flex flex-wrap gap-1.5" data-ref="skills">
+                        <!-- Skills chips -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex sm:flex-col gap-2 flex-shrink-0">
+                <button
+                    class="flex-1 sm:flex-none btn-primary py-2 px-5 rounded-lg text-sm font-bold opacity-90 hover:opacity-100 transition-opacity"
+                    data-action="accept">
+                    Accept
+                </button>
+                <button
+                    class="flex-1 sm:flex-none py-2 px-5 rounded-lg text-sm font-bold text-slate-500 hover:text-red-600 hover:bg-red-50 border border-transparent hover:border-red-100 transition-all"
+                    data-action="reject">
+                    Reject
+                </button>
+            </div>
+        </div>
+    </template>
+
+    <template id="memberRowTemplate">
+        <div class="p-4 flex items-center gap-3 hover:bg-slate-50 transition-colors">
+            <div class="h-10 w-10 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-sm"
+                data-ref="avatar">A</div>
+            <div class="flex flex-col min-w-0 flex-1">
+                <div class="flex items-center justify-between gap-2">
+                    <span class="text-sm font-bold text-slate-800 truncate" data-ref="name">Name</span>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider shrink-0"
+                        data-ref="roleBadge">Role</span>
+                </div>
+                <span class="text-xs text-slate-500 truncate mt-0.5" data-ref="email">email@test.com</span>
+            </div>
+        </div>
+    </template>
+
+    <script src="js/api.js"></script>
+    <script>
+        enforceAuth();
+
+        // Extract project ID from URL Search Params: ?id=123
+        const urlParams = new URLSearchParams(window.location.search);
+        const projectId = urlParams.get('id');
+
+        let projectData = null;
+
+        async function loadProjectDetails() {
+            if (!projectId) {
+                document.getElementById('error').classList.remove('hidden');
+                return;
+            }
+
+            const loading = document.getElementById('loading');
+            const content = document.getElementById('dashboardContent');
+            const error = document.getElementById('error');
+
+            loading.classList.remove('hidden');
+            content.classList.add('hidden');
+            error.classList.add('hidden');
+
+            try {
+                const res = await API.getProjectStatus(projectId);
+                projectData = res.project;
+
+                // Populate Header
+                document.getElementById('projTitle').textContent = res.project.title;
+                document.getElementById('projDesc').textContent = res.project.description;
+                document.getElementById('memCount').textContent = res.members.length;
+                document.getElementById('teamSize').textContent = res.project.team_size;
+
+                const statusBadge = document.getElementById('projStatus');
+                statusBadge.textContent = res.project.status;
+                statusBadge.className = 'px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ';
+                if (res.project.status === "Open") statusBadge.classList.add('bg-blue-100', 'text-blue-700');
+                else if (res.project.status === "Team Full") statusBadge.classList.add('bg-orange-100', 'text-orange-700');
+                else if (res.project.status === "In Progress") statusBadge.classList.add('bg-green-100', 'text-green-700');
+                else statusBadge.classList.add('bg-slate-100', 'text-slate-700');
+
+                const skillsContainer = document.getElementById('projSkills');
+                skillsContainer.innerHTML = '';
+                (res.project.required_skills || []).forEach(skill => {
+                    skillsContainer.innerHTML += `<span class="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-md text-[10px] font-semibold font-mono border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500">${skill}</span>`;
+                });
+
+                // Populate Team
+                const teamList = document.getElementById('teamList');
+                const memberTemplate = document.getElementById('memberRowTemplate');
+                teamList.innerHTML = '';
+
+                res.members.forEach(member => {
+                    const clone = memberTemplate.content.cloneNode(true);
+                    clone.querySelector('[data-ref="name"]').textContent = member.name;
+                    clone.querySelector('[data-ref="email"]').textContent = member.email;
+                    clone.querySelector('[data-ref="avatar"]').textContent = member.name.charAt(0).toUpperCase();
+
+                    const roleBadge = clone.querySelector('[data-ref="roleBadge"]');
+                    roleBadge.textContent = member.role;
+                    if (member.role === 'Creator') {
+                        roleBadge.classList.add('bg-teal-100', 'text-teal-700');
+                        clone.querySelector('[data-ref="avatar"]').classList.add('bg-teal-500', 'text-white');
+                        clone.querySelector('[data-ref="avatar"]').classList.remove('bg-slate-200', 'text-slate-600');
+                    } else {
+                        roleBadge.classList.add('bg-slate-100', 'text-slate-600');
+                    }
+
+                    teamList.appendChild(clone);
+                });
+
+                // Populate Requests
+                const reqList = document.getElementById('requestsList');
+                const reqTemplate = document.getElementById('requestCardTemplate');
+                reqList.innerHTML = '';
+
+                const reqs = res.join_requests || [];
+                document.getElementById('reqBadge').textContent = reqs.length;
+
+                if (reqs.length === 0) {
+                    reqList.innerHTML = `
+                    <div class="text-center py-10 glass-panel rounded-xl bg-white/50 border border-slate-200 border-dashed">
+                        <svg class="w-8 h-8 text-slate-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                        </svg>
+                        <p class="text-sm font-medium text-slate-400">No pending join requests.</p>
+                    </div>`;
+                } else {
+                    reqs.forEach(req => {
+                        const clone = reqTemplate.content.cloneNode(true);
+
+                        clone.querySelector('.group').dataset.reqId = req.request_id;
+                        clone.querySelector('[data-ref="name"]').textContent = req.name;
+                        clone.querySelector('[data-ref="academic"]').innerHTML = `${req.department} &bull; ${req.year_of_study}`;
+                        clone.querySelector('[data-ref="avatar"]').textContent = req.name.charAt(0).toUpperCase();
+
+                        const rSkills = clone.querySelector('[data-ref="skills"]');
+                        (req.skills || []).forEach(skill => {
+                            // Highlight skills that match project required skills
+                            const isMatch = (res.project.required_skills || []).includes(skill);
+                            const cssClass = isMatch ? 'bg-teal-50 text-teal-700 border-teal-200' : 'bg-slate-50 text-slate-600 border-slate-200';
+
+                            rSkills.innerHTML += `<span class="px-2 py-0.5 rounded text-[10px] font-semibold font-mono border ${cssClass}">${skill}</span>`;
+                        });
+
+                        // Action buttons
+                        const btns = clone.querySelectorAll('button');
+                        btns.forEach(btn => {
+                            btn.onclick = (e) => handleRequestAction(req.request_id, e.target.dataset.action, e.target);
+                        });
+
+                        reqList.appendChild(clone);
+                    });
+                }
+
+                loading.classList.add('hidden');
+                content.classList.remove('hidden');
+
+            } catch (err) {
+                loading.classList.add('hidden');
+                error.classList.remove('hidden');
+                error.textContent = err.message || "Failed to load project details.";
+                console.error("Failed to load project status:", err);
+            }
+        }
+
+        async function handleRequestAction(reqId, action, buttonEl) {
+            // Disable buttons during request
+            const card = buttonEl.closest('.group');
+            card.querySelectorAll('button').forEach(b => b.disabled = true);
+            const originalText = buttonEl.innerText;
+            buttonEl.innerText = "...";
+
+            try {
+                await API.respondToJoinRequest(projectId, reqId, action);
+                showToast(`Request successfully ${action}ed!`, 'success');
+                loadProjectDetails(); // Reload entirely to refresh counts, team size, etc
+            } catch (err) {
+                showToast(err.message || 'Failed to process request.', 'error');
+                buttonEl.innerText = originalText;
+                card.querySelectorAll('button').forEach(b => b.disabled = false);
+            }
+        }
+
+        function showToast(msg, type) {
+            const toast = document.getElementById('toastMessage');
+            toast.textContent = msg;
+            toast.className = 'fixed top-24 left-1/2 -translate-x-1/2 z-50 text-sm font-bold px-6 py-3 rounded-full shadow-lg border transform transition-all duration-300';
+
+            if (type === 'success') toast.classList.add('bg-teal-100', 'text-teal-800', 'border-teal-200');
+            else toast.classList.add('bg-red-100', 'text-red-800', 'border-red-200');
+
+            // Show
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.remove('-translate-y-4', 'opacity-0');
+                toast.classList.add('translate-y-0', 'opacity-100');
+            }, 10);
+
+            // Hide
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('-translate-y-4', 'opacity-0');
+                setTimeout(() => toast.classList.add('hidden'), 300);
+            }, 3000);
+        }
+
+        loadProjectDetails();
+    </script>
+</body>
+
+</html>

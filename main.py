@@ -1,9 +1,15 @@
-from fastapi import FastAPI, Form, Request, Response
+from fastapi import FastAPI, Form, Request, Response, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from sqlalchemy.orm import Session
 import json
 from matching_engine import get_top_matches
+from database import engine, get_db
+import models
+
+# Create all database tables
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="UniCollab")
 
@@ -395,60 +401,124 @@ async def create_project_get(request: Request):
     })
 
 @app.post("/create-project")
-async def create_project_post(request: Request):
+async def create_project_post(request: Request, db: Session = Depends(get_db)):
     user_email = request.cookies.get("user_email")
     if not user_email or user_email not in dummy_users:
         return RedirectResponse(url="/login", status_code=303)
         
     form_data = await request.form()
     
-    global project_id_counter
+    selected_skills = form_data.getlist("skills")
     
-    new_project = {
-        "id": project_id_counter,
-        "creator_email": user_email,
-        "title": form_data.get("title"),
-        "type": form_data.get("type"),
-        "skills": form_data.getlist("skills"),
-        "team_size": int(form_data.get("team_size", 4)),
-        "description": form_data.get("description"),
-        "members": [user_email]  # Creator is automatically the first member
-    }
-    dummy_projects.append(new_project)
-    project_id_counter += 1
+    new_project = models.Project(
+        creator_id=user_email,
+        title=form_data.get("title"),
+        description=form_data.get("description"),
+        required_skills=",".join(selected_skills) if selected_skills else "",
+        team_size=int(form_data.get("team_size", 4))
+    )
+    db.add(new_project)
+    db.commit()
+    db.refresh(new_project)
     
-    return RedirectResponse(url="/projects", status_code=303)
+    creator_member = models.ProjectMember(
+        project_id=new_project.project_id,
+        user_id=user_email,
+        role="Creator"
+    )
+    db.add(creator_member)
+    db.commit()
+    
+    return RedirectResponse(url="/my-projects", status_code=303)
 
-@app.get("/projects", response_class=HTMLResponse)
-async def projects_get(request: Request):
+@app.get("/my-projects", response_class=HTMLResponse)
+async def my_projects_get(request: Request, db: Session = Depends(get_db)):
     user_email = request.cookies.get("user_email")
     if not user_email or user_email not in dummy_users:
         return RedirectResponse(url="/login", status_code=303)
         
-    # Enrich projects with human-readable names
+    user_projects = db.query(models.Project).filter(models.Project.creator_id == user_email).all()
+    
     enriched_projects = []
-    for proj in dummy_projects:
+    total_new_requests = 0
+    for proj in user_projects:
+        member_count = db.query(models.ProjectMember).filter(models.ProjectMember.project_id == proj.project_id).count()
+        join_reqs = db.query(models.JoinRequest).filter(
+            models.JoinRequest.project_id == proj.project_id,
+            models.JoinRequest.status == "pending"
+        ).count()
+        
+        total_new_requests += join_reqs
+        status_label = "Open"
+        if member_count >= proj.team_size:
+            status_label = "Team Full"
+            
+        enriched_projects.append({
+            "project_id": proj.project_id,
+            "title": proj.title,
+            "description": proj.description,
+            "required_skills": proj.required_skills,
+            "team_size": proj.team_size,
+            "member_count": member_count,
+            "join_requests": join_reqs,
+            "status_label": status_label
+        })
+        
+    return templates.TemplateResponse("my_projects.html", {
+        "request": request,
+        "email": user_email,
+        "projects": enriched_projects,
+        "total_new_requests": total_new_requests,
+        "active_page": "my_projects"
+    })
+
+@app.get("/projects", response_class=HTMLResponse)
+async def projects_get(request: Request, db: Session = Depends(get_db)):
+    user_email = request.cookies.get("user_email")
+    if not user_email or user_email not in dummy_users:
+        return RedirectResponse(url="/login", status_code=303)
+        
+    # Fetch all projects from DB to display here
+    all_db_projects = db.query(models.Project).all()
+    
+    enriched_projects = []
+    for proj in all_db_projects:
         # Find creator name
         creator_name = "Unknown Creator"
-        if proj["creator_email"] in dummy_profiles:
-            creator_name = dummy_profiles[proj["creator_email"]].get("full_name", creator_name)
-        elif proj["creator_email"] in dummy_users:
-             creator_name = proj["creator_email"].split("@")[0].capitalize() # fallback simple name
+        if proj.creator_id in dummy_profiles:
+            creator_name = dummy_profiles[proj.creator_id].get("full_name", creator_name)
+        elif proj.creator_id in dummy_users:
+             creator_name = proj.creator_id.split("@")[0].capitalize()
              
-        # Find member names
+        # Fetch members
+        db_members = db.query(models.ProjectMember).filter(models.ProjectMember.project_id == proj.project_id).all()
+        member_emails = [m.user_id for m in db_members]
         member_names = []
-        for mem_email in proj["members"]:
+        for mem_email in member_emails:
             name = mem_email.split("@")[0].capitalize()
-            if mem_email == proj["creator_email"]:
+            if mem_email == proj.creator_id:
                 name += " (Creator)"
             elif mem_email in dummy_profiles:
                 name = dummy_profiles[mem_email].get("full_name", name)
             member_names.append(name)
             
+        # Has user requested to join?
+        has_requested = db.query(models.JoinRequest).filter(
+            models.JoinRequest.project_id == proj.project_id,
+            models.JoinRequest.requester_id == user_email,
+            models.JoinRequest.status == "pending"
+        ).first() is not None
+            
         enriched_projects.append({
-            **proj,
+            "id": proj.project_id, # for template compatibility
+            "title": proj.title,
+            "description": proj.description,
+            "required_skills": proj.required_skills,
+            "team_size": proj.team_size,
             "creator_name": creator_name,
-            "member_names": member_names
+            "members": member_emails, # template expects 'members' list
+            "member_names": member_names,
+            "has_requested": has_requested
         })
             
     return templates.TemplateResponse("projects.html", {
@@ -461,90 +531,138 @@ async def projects_get(request: Request):
 @app.post("/request-project-join")
 async def request_project_join(
     request: Request,
-    project_id: int = Form(...)
+    project_id: int = Form(...),
+    db: Session = Depends(get_db)
 ):
     user_email = request.cookies.get("user_email")
     if not user_email or user_email not in dummy_users:
         return RedirectResponse(url="/login", status_code=303)
         
-    global project_request_id_counter
+    # Check if already requested or member
+    existing_req = db.query(models.JoinRequest).filter(
+        models.JoinRequest.project_id == project_id,
+        models.JoinRequest.requester_id == user_email,
+        models.JoinRequest.status == "pending"
+    ).first()
     
-    dummy_project_requests.append({
-        "id": project_request_id_counter,
-        "project_id": project_id,
-        "sender_email": user_email,
-        "status": "pending"
-    })
-    project_request_id_counter += 1
+    if not existing_req:
+        new_req = models.JoinRequest(
+            project_id=project_id,
+            requester_id=user_email,
+            status="pending"
+        )
+        db.add(new_req)
+        db.commit()
     
     return RedirectResponse(url="/projects", status_code=303)
 
-@app.get("/project-requests", response_class=HTMLResponse)
-async def project_requests_get(request: Request):
+@app.get("/project-status/{project_id}", response_class=HTMLResponse)
+async def project_status_get(request: Request, project_id: int, db: Session = Depends(get_db)):
     user_email = request.cookies.get("user_email")
     if not user_email or user_email not in dummy_users:
         return RedirectResponse(url="/login", status_code=303)
         
-    # Find projects this user has created
-    my_project_ids = [p["id"] for p in dummy_projects if p["creator_email"] == user_email]
+    project = db.query(models.Project).filter(models.Project.project_id == project_id).first()
+    if not project or project.creator_id != user_email:
+        return HTMLResponse("Unauthorized or Project Not Found", status_code=403)
+        
+    # Fetch team members
+    db_members = db.query(models.ProjectMember).filter(models.ProjectMember.project_id == project_id).all()
+    team_members = []
+    for mem in db_members:
+        name = mem.user_id.split("@")[0].capitalize()
+        skills = []
+        if mem.user_id in dummy_profiles:
+            name = dummy_profiles[mem.user_id].get("full_name", name)
+            skills = dummy_skills.get(mem.user_id, [])
+        team_members.append({
+            "email": mem.user_id,
+            "name": name,
+            "skills": skills,
+            "role": mem.role
+        })
+        
+    # Fetch join requests
+    db_requests = db.query(models.JoinRequest).filter(
+        models.JoinRequest.project_id == project_id,
+        models.JoinRequest.status == "pending"
+    ).all()
     
-    # Find all requests targeted at those projects
-    incoming_reqs = []
-    for req in dummy_project_requests:
-        if req["project_id"] in my_project_ids:
-            # find project title
-            proj_title = next((p["title"] for p in dummy_projects if p["id"] == req["project_id"]), "Unknown Project")
+    join_requests = []
+    for req in db_requests:
+        sender_name = req.requester_id.split("@")[0].capitalize()
+        sender_dept = "Unknown"
+        sender_year = "Unknown"
+        sender_skills = []
+        
+        if req.requester_id in dummy_profiles:
+            prof = dummy_profiles[req.requester_id]
+            sender_name = prof.get("full_name", sender_name)
+            sender_dept = prof.get("department", sender_dept)
+            sender_year = prof.get("year_of_study", sender_year)
+            sender_skills = dummy_skills.get(req.requester_id, [])
             
-            # Enrich sender profile
-            sender_name = "Unknown User"
-            sender_dept = "Unknown Dept"
-            sender_skills = []
-            
-            if req["sender_email"] in dummy_profiles:
-                 prof = dummy_profiles[req["sender_email"]]
-                 sender_name = prof.get("full_name", sender_name)
-                 sender_dept = prof.get("department", sender_dept)
-                 sender_skills = dummy_skills.get(req["sender_email"], [])
-                 
-            incoming_reqs.append({
-                **req,
-                "project_title": proj_title,
-                "sender_name": sender_name,
-                "sender_department": sender_dept,
-                "sender_skills": sender_skills
-            })
-            
-    return templates.TemplateResponse("project_requests.html", {
-        "request": request, 
+        join_requests.append({
+            "request_id": req.request_id,
+            "sender_email": req.requester_id,
+            "sender_name": sender_name,
+            "sender_department": sender_dept,
+            "sender_year": sender_year,
+            "sender_skills": sender_skills
+        })
+        
+    return templates.TemplateResponse("project_status.html", {
+        "request": request,
         "email": user_email,
-        "requests": incoming_reqs
+        "project": project,
+        "team_members": team_members,
+        "join_requests": join_requests,
+        "active_page": "my_projects"
     })
 
 @app.post("/respond-project-request")
 async def respond_project_request(
     request: Request,
     request_id: int = Form(...),
-    action: str = Form(...) # expected 'accept' or 'reject'
+    action: str = Form(...), # expected 'accept' or 'reject'
+    db: Session = Depends(get_db)
 ):
     user_email = request.cookies.get("user_email")
     if not user_email or user_email not in dummy_users:
         return RedirectResponse(url="/login", status_code=303)
         
-    for req in dummy_project_requests:
-        if req["id"] == request_id:
-            # Verify the logged in user actually owns this project
-            project = next((p for p in dummy_projects if p["id"] == req["project_id"]), None)
-            if project and project["creator_email"] == user_email:
-                if action == 'accept':
-                    req["status"] = "accepted"
-                    # Add them to the project members if space permits
-                    if len(project["members"]) < project["team_size"] and req["sender_email"] not in project["members"]:
-                         project["members"].append(req["sender_email"])
-                elif action == 'reject':
-                    req["status"] = "rejected"
-            break
+    join_req = db.query(models.JoinRequest).filter(models.JoinRequest.request_id == request_id).first()
+    if not join_req:
+        return RedirectResponse(url="/my-projects", status_code=303)
+        
+    project = db.query(models.Project).filter(models.Project.project_id == join_req.project_id).first()
+    if not project or project.creator_id != user_email:
+        return RedirectResponse(url="/my-projects", status_code=303)
+        
+    if action == 'accept':
+        join_req.status = "accepted"
+        
+        # Check team size
+        current_members = db.query(models.ProjectMember).filter(models.ProjectMember.project_id == project.project_id).count()
+        if current_members < project.team_size:
+            # Check if already a member
+            existing_member = db.query(models.ProjectMember).filter(
+                models.ProjectMember.project_id == project.project_id,
+                models.ProjectMember.user_id == join_req.requester_id
+            ).first()
+            if not existing_member:
+                new_member = models.ProjectMember(
+                    project_id=project.project_id,
+                    user_id=join_req.requester_id,
+                    role="Member"
+                )
+                db.add(new_member)
+    elif action == 'reject':
+        join_req.status = "rejected"
+        
+    db.commit()
             
-    return RedirectResponse(url="/project-requests", status_code=303)
+    return RedirectResponse(url=f"/project-status/{project.project_id}", status_code=303)
 
 @app.get("/matches", response_class=HTMLResponse)
 async def matches_get(request: Request):
@@ -638,41 +756,54 @@ async def join_idea_post(request: Request, idea_id: int = Form(...)):
     return RedirectResponse(url="/ideas", status_code=303)
 
 @app.get("/workspace/{project_id}", response_class=HTMLResponse)
-async def workspace_get(request: Request, project_id: int):
+async def workspace_get(request: Request, project_id: int, db: Session = Depends(get_db)):
     user_email = request.cookies.get("user_email")
     if not user_email or user_email not in dummy_users:
         return RedirectResponse(url="/login", status_code=303)
         
     # Find Project
-    project = next((p for p in dummy_projects if p["id"] == project_id), None)
+    project = db.query(models.Project).filter(models.Project.project_id == project_id).first()
     if not project:
          return HTMLResponse("Project Not Found", status_code=404)
          
     # Check Access
-    if user_email not in project["members"]:
+    is_member = db.query(models.ProjectMember).filter(
+        models.ProjectMember.project_id == project_id,
+        models.ProjectMember.user_id == user_email
+    ).first()
+    if not is_member:
          return HTMLResponse("Unauthorized. Only confirmed team members can access this workspace.", status_code=403)
          
     # Collect Team Details
+    db_members = db.query(models.ProjectMember).filter(models.ProjectMember.project_id == project_id).all()
     team_members = []
-    for mem_email in project["members"]:
-        name = mem_email.split("@")[0].capitalize()
-        if mem_email == project["creator_email"]:
+    for mem in db_members:
+        name = mem.user_id.split("@")[0].capitalize()
+        if mem.user_id == project.creator_id:
             name += " (Creator)"
-        elif mem_email in dummy_profiles:
-            name = dummy_profiles[mem_email].get("full_name", name)
+        elif mem.user_id in dummy_profiles:
+            name = dummy_profiles[mem.user_id].get("full_name", name)
         team_members.append(name)
         
-    # Collect Tasks for this project
+    # Collect Tasks for this project (keep dummy_tasks for now as requested by scope implicitly, but we need project.id to match)
     proj_tasks = [t for t in dummy_tasks if t["project_id"] == project_id]
     
     todo_tasks = [t for t in proj_tasks if t["status"] == "todo"]
     in_progress_tasks = [t for t in proj_tasks if t["status"] == "in_progress"]
     completed_tasks = [t for t in proj_tasks if t["status"] == "completed"]
     
+    # Needs to match template signature
+    template_proj = {
+        "id": project.project_id,
+        "title": project.title,
+        "creator_email": project.creator_id,
+        "description": project.description
+    }
+
     return templates.TemplateResponse("workspace.html", {
         "request": request,
         "email": user_email,
-        "project": project,
+        "project": template_proj,
         "team_names": team_members,
         "todo": todo_tasks,
         "in_progress": in_progress_tasks,

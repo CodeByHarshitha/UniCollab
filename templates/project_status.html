@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}Project Status - UniCollab{% endblock %}
+{% block page_title %}Project Status{% endblock %}
+
+{% block content %}
+{% from 'components/button.html' import btn_primary, btn_secondary %}
+
+<div class="max-w-4xl mx-auto space-y-8">
+
+    <div class="mb-4">
+        <a href="/my-projects"
+            class="inline-flex items-center text-indigo-400 hover:text-indigo-300 transition-colors text-sm font-medium">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18">
+                </path>
+            </svg>
+            Back to My Projects
+        </a>
+    </div>
+
+    <!-- Project Information -->
+    <div class="glass-panel p-8 rounded-2xl relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 blur-[60px] rounded-full pointer-events-none">
+        </div>
+
+        <h2 class="text-3xl font-bold text-white mb-2 relative z-10">{{ project.title }}</h2>
+        <div class="flex flex-wrap gap-4 mb-6 relative z-10">
+            <span
+                class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border bg-indigo-500/10 text-indigo-400 border-indigo-500/20">
+                Team Size: {{ team_members|length }} / {{ project.team_size }}
+            </span>
+            <span
+                class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border bg-slate-800 text-slate-300 border-slate-700">
+                {{ project.required_skills }}
+            </span>
+        </div>
+
+        <div class="prose prose-invert max-w-none relative z-10">
+            <h3 class="text-lg font-semibold text-white mb-2">Description</h3>
+            <p class="text-slate-300 leading-relaxed">{{ project.description }}</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <!-- Team Members Section -->
+        <div class="lg:col-span-1 space-y-6">
+            <h3 class="text-xl font-bold text-white flex items-center gap-2 border-b border-slate-700/50 pb-4">
+                <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
+                    </path>
+                </svg>
+                Team Members
+            </h3>
+
+            <div class="space-y-4 shadow rounded-lg border border-slate-700 p-4 min-h-[300px]">
+                {% for member in team_members %}
+                <div class="flex items-start gap-4 p-3 rounded-xl bg-slate-800/50 border border-slate-700">
+                    <div
+                        class="w-10 h-10 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold shrink-0">
+                        {{ member.name[0] }}
+                    </div>
+                    <div>
+                        <h4 class="text-white font-medium">{{ member.name }}</h4>
+                        <p class="text-xs text-slate-400">{{ member.role }}</p>
+                        {% if member.skills %}
+                        <div class="flex w-full mt-2 overflow-x-auto gap-1">
+                            {% for skill in member.skills %}
+                            {% if loop.index <= 2 %} <span
+                                class="px-1.5 py-0.5 bg-slate-700 rounded text-[10px] text-indigo-300 truncate">{{ skill
+                                }}</span>
+                                {% endif %}
+                                {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <a href="/workspace/{{ project.project_id }}"
+                class="w-full inline-flex justify-center flex items-center py-2 rounded border border-indigo-500 text-indigo-500 hover:bg-indigo-500 hover:text-white transition duration-200 uppercase font-bold text-xs tracking-wider">
+                Open Workspace
+            </a>
+        </div>
+
+        <!-- Join Requests Section -->
+        <div class="lg:col-span-2 space-y-6">
+            <h3 class="text-xl font-bold text-white flex items-center gap-2 border-b border-slate-700/50 pb-4">
+                <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
+                    </path>
+                </svg>
+                Join Requests
+                {% if join_requests|length > 0 %}
+                <span class="ml-2 px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-400 text-xs">{{ join_requests|length
+                    }} New</span>
+                {% endif %}
+            </h3>
+
+            {% if join_requests|length == 0 %}
+            <div class="glass-panel p-8 rounded-2xl text-center border-slate-700/50">
+                <p class="text-slate-400">No pending requests at the moment.</p>
+            </div>
+            {% else %}
+
+            <div class="space-y-4">
+                {% for req in join_requests %}
+                <div
+                    class="glass-panel p-5 rounded-2xl border border-slate-700 flex flex-col md:flex-row gap-6 relative">
+                    <div class="flex-1">
+                        <h4 class="text-lg font-bold text-white">{{ req.sender_name }}</h4>
+                        <div class="text-sm text-slate-400 mb-3 space-x-2">
+                            <span>{{ req.sender_department }}</span> •
+                            <span>Year: {{ req.sender_year }}</span>
+                        </div>
+
+                        <div class="flex flex-col">
+                            <span class="text-xs text-slate-500 mb-1">Skills</span>
+                            <div class="flex flex-wrap gap-2">
+                                {% for skill in req.sender_skills %}
+                                <span
+                                    class="px-2 py-1 bg-slate-800 rounded text-xs text-indigo-300 border border-slate-700">{{
+                                    skill }}</span>
+                                {% else %}
+                                <span class="text-xs text-slate-500 italic">No skills listed</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="flex md:flex-col gap-3 justify-center shrink-0 w-full md:w-32 border-t border-slate-700 md:border-t-0 md:border-l pt-4 md:pt-0 md:pl-6">
+                        <form action="/respond-project-request" method="POST" class="w-full">
+                            <input type="hidden" name="request_id" value="{{ req.request_id }}">
+                            <input type="hidden" name="action" value="accept">
+                            <button type="submit"
+                                class="w-full py-2 rounded bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 border border-emerald-500/50 font-bold uppercase text-xs tracking-wider transition-colors text-center cursor-pointer">
+                                Accept
+                            </button>
+                        </form>
+
+                        <form action="/respond-project-request" method="POST" class="w-full">
+                            <input type="hidden" name="request_id" value="{{ req.request_id }}">
+                            <input type="hidden" name="action" value="reject">
+                            <button type="submit"
+                                class="w-full py-2 rounded bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 border border-rose-500/50 font-bold uppercase text-xs tracking-wider transition-colors text-center cursor-pointer">
+                                Reject
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

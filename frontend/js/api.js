@@ -3,7 +3,7 @@
  */
 
 const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'https://unicollab-4zgf.onrender.com'
+    ? 'http://localhost:10000'
     : 'https://unicollab-4zgf.onrender.com';
 
 const API = {
@@ -86,6 +86,22 @@ const API = {
 
     async createProject(projectData) {
         return await this.request('/project/create', 'POST', projectData);
+    },
+
+    async getMyProjects() {
+        return await this.request('/project/my');
+    },
+
+    async getProjectStatus(projectId) {
+        return await this.request(`/project/${projectId}/status`);
+    },
+
+    async requestToJoinProject(projectId) {
+        return await this.request(`/project/${projectId}/request`, 'POST');
+    },
+
+    async respondToJoinRequest(projectId, reqId, action) {
+        return await this.request(`/project/${projectId}/request/${reqId}/respond?action=${action}`, 'POST');
     }
 };
 
