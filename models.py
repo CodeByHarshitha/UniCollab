@@ -10,6 +10,22 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     password = Column(String, nullable=False) # this will store the hashed password
 
+    profile = relationship("Profile", back_populates="user", uselist=False)
+
+class Profile(Base):
+    __tablename__ = "profiles"
+
+    user_id = Column(Integer, ForeignKey("users.id"), primary_key=True, index=True)
+    full_name = Column(String, nullable=False)
+    department = Column(String, nullable=False)
+    course = Column(String, nullable=False)
+    specialization = Column(String, nullable=False)
+    year_of_study = Column(String, nullable=False)
+    graduation_year = Column(String, nullable=False)
+    skills = Column(String, nullable=True) # Comma-separated string
+
+    user = relationship("User", back_populates="profile")
+
 class Project(Base):
     __tablename__ = "projects"
 

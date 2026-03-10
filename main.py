@@ -47,7 +47,7 @@ dummy_tasks = [] # {"id": int, "project_id": int, "title": str, "status": str} #
 task_id_counter = 1
 
 @app.post("/login")
-async def login(email: str = Form(...), password: str = Form(...)):
+async def login(email: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
     # Clean up any accidental trailing/leading spaces especially from auto-fill
     clean_email = email.strip()
     
@@ -57,6 +57,7 @@ async def login(email: str = Form(...), password: str = Form(...)):
     if not clean_email.endswith("@srmist.edu.in"):
         return {"error": "Only SRM emails allowed"}
 
+    # Fallback checking dummy_users for simplicity if not in DB yet
     if clean_email not in dummy_users:
         print(f"Email '{clean_email}' not found in dummy_users.")
         return {"error": "Invalid email or password"}
@@ -67,9 +68,21 @@ async def login(email: str = Form(...), password: str = Form(...)):
 
     print(f"Login successful for '{clean_email}'")
     
+    # Fetch user from DB or create if doesn't exist (simulating signup/login for this demo)
+    user = db.query(models.User).filter(models.User.email == clean_email).first()
+    if not user:
+         user = models.User(email=clean_email, password=password)
+         db.add(user)
+         db.commit()
+         db.refresh(user)
+         
+    # Explicitly check for Profile existence to trigger onboarding
+    has_profile = db.query(models.Profile).filter(models.Profile.user_id == user.id).first() is not None
+    
     # Create a redirect response instead of JSON dict, to securely set a browser cookie
     # See https://fastapi.tiangolo.com/advanced/response-cookies/
-    response = RedirectResponse(url="/dashboard", status_code=303)
+    target_url = "/dashboard" if has_profile else "/edit-profile"
+    response = RedirectResponse(url=target_url, status_code=303)
     response.set_cookie(key="user_email", value=clean_email, httponly=True)
     return response
 
@@ -81,85 +94,122 @@ async def logout(response: Response):
     return response
 
 @app.get("/dashboard", response_class=HTMLResponse)
-async def dashboard(request: Request):
+async def dashboard(request: Request, db: Session = Depends(get_db)):
     # Retrieve the user email from cookies to verify they are logged in
     user_email = request.cookies.get("user_email")
     if not user_email or user_email not in dummy_users:
         return RedirectResponse(url="/login", status_code=303)
         
-    # Check if the user has a profile
-    has_profile = user_email in dummy_profiles
-    profile = dummy_profiles.get(user_email)
-    skills = dummy_skills.get(user_email, [])
+    user = db.query(models.User).filter(models.User.email == user_email).first()
+    if not user:
+        return RedirectResponse(url="/login", status_code=303)
+        
+    profile = db.query(models.Profile).filter(models.Profile.user_id == user.id).first()
+    has_profile = profile is not None
+    
+    skills = []
+    if has_profile and profile.skills:
+        skills = profile.skills.split(",")
     
     return templates.TemplateResponse("dashboard.html", {
         "request": request,
         "email": user_email,
         "has_profile": has_profile,
-        "profile": profile,
+        "profile": profile, # This is now a SQLAlchemy object or None
         "skills": skills,
         "active_page": "dashboard"
     })
 
-@app.get("/create-profile", response_class=HTMLResponse)
-async def create_profile_get(request: Request):
-    # Protected route check
+@app.get("/edit-profile", response_class=HTMLResponse)
+async def edit_profile_get(request: Request, db: Session = Depends(get_db)):
     user_email = request.cookies.get("user_email")
     if not user_email or user_email not in dummy_users:
         return RedirectResponse(url="/login", status_code=303)
         
-    return templates.TemplateResponse("create_profile.html", {"request": request, "email": user_email})
+    user = db.query(models.User).filter(models.User.email == user_email).first()
+    if not user:
+        return RedirectResponse(url="/login", status_code=303)
+        
+    profile = db.query(models.Profile).filter(models.Profile.user_id == user.id).first()
+    
+    # Pre-fill form if profile exists
+    return templates.TemplateResponse("edit_profile.html", {"request": request, "email": user_email, "profile": profile})
 
-@app.post("/create-profile")
-async def create_profile_post(
+@app.post("/edit-profile")
+async def edit_profile_post(
     request: Request,
     full_name: str = Form(...),
     year_of_study: str = Form(...),
     department: str = Form(...),
     course: str = Form(...),
     specialization: str = Form(...),
-    graduation_year: str = Form(...)
+    graduation_year: str = Form(...),
+    skills: str = Form(""), # Comma-separated
+    db: Session = Depends(get_db)
 ):
-    # Protected route check
     user_email = request.cookies.get("user_email")
     if not user_email or user_email not in dummy_users:
         return RedirectResponse(url="/login", status_code=303)
         
-    # Save the profile data
-    dummy_profiles[user_email] = {
-        "full_name": full_name,
-        "year_of_study": year_of_study,
-        "department": department,
-        "course": course,
-        "specialization": specialization,
-        "graduation_year": graduation_year
-    }
+    user = db.query(models.User).filter(models.User.email == user_email).first()
+    if not user:
+        return RedirectResponse(url="/login", status_code=303)
+        
+    profile = db.query(models.Profile).filter(models.Profile.user_id == user.id).first()
     
-    # Redirect to the add skills page
-    return RedirectResponse(url="/skills", status_code=303)
+    clean_skills = ""
+    if skills:
+        clean_skills = ",".join([s.strip() for s in skills.split(",") if s.strip()])
+    
+    if profile:
+        profile.full_name = full_name
+        profile.year_of_study = year_of_study
+        profile.department = department
+        profile.course = course
+        profile.specialization = specialization
+        profile.graduation_year = graduation_year
+        profile.skills = clean_skills
+    else:
+        profile = models.Profile(
+            user_id=user.id,
+            full_name=full_name,
+            year_of_study=year_of_study,
+            department=department,
+            course=course,
+            specialization=specialization,
+            graduation_year=graduation_year,
+            skills=clean_skills
+        )
+        db.add(profile)
+        
+    db.commit()
+    
+    # Redirect to profile view with success query param
+    return RedirectResponse(url="/profile?updated=true", status_code=303)
 
 @app.get("/profile", response_class=HTMLResponse)
-async def view_profile_get(request: Request):
+async def view_profile_get(request: Request, db: Session = Depends(get_db)):
     user_email = request.cookies.get("user_email")
     if not user_email or user_email not in dummy_users:
         return RedirectResponse(url="/login", status_code=303)
         
-    # Check if they have set up a profile yet
-    if user_email not in dummy_profiles:
-        return RedirectResponse(url="/create-profile", status_code=303)
+    user = db.query(models.User).filter(models.User.email == user_email).first()
+    profile = db.query(models.Profile).filter(models.Profile.user_id == user.id).first() if user else None
+    
+    # If no profile, they must be new and forced to create it
+    if not profile:
+        return RedirectResponse(url="/edit-profile", status_code=303)
         
-    profile = dummy_profiles.get(user_email)
-    skills = dummy_skills.get(user_email, [])
-    interests = dummy_interests.get(user_email, [])
-    looking_for = dummy_looking_for.get(user_email, [])
+    skills_list = profile.skills.split(",") if profile.skills else []
+    
+    updated = request.query_params.get("updated") == "true"
     
     return templates.TemplateResponse("profile.html", {
         "request": request, 
         "email": user_email,
         "profile": profile,
-        "skills": skills,
-        "interests": interests,
-        "looking_for": looking_for
+        "skills": skills_list,
+        "updated": updated
     })
 
 import json

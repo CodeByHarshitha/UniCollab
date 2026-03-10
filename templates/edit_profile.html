@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Profile - UniCollab{% endblock %}
+{% block page_title %}Identity Vector{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto space-y-8">
+
+    <div class="mb-4">
+        <a href="{% if profile %}/profile{% else %}/dashboard{% endif %}"
+            class="inline-flex items-center text-indigo-400 hover:text-indigo-300 transition-colors text-sm font-medium">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18">
+                </path>
+            </svg>
+            {% if profile %}Back to Profile{% else %}Back to Dashboard{% endif %}
+        </a>
+    </div>
+
+    <!-- Main Formulation Card -->
+    <div class="glass-panel p-8 sm:p-10 rounded-2xl relative overflow-hidden">
+        <!-- Decorative subtle grid internal -->
+        <div
+            class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTEgMWgyMHYyMEgxVjF6IiBmaWxsPSJub25lIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsMC4wMSkiIHN0cm9rZS13aWR0aD0iMSIvPjwvc3ZnPg==')] opacity-50 z-0 pointer-events-none">
+        </div>
+
+        <div class="relative z-10">
+            <h2 class="text-2xl font-bold text-white mb-2">{% if profile %}Update{% else %}Initialize{% endif %} Profile
+                Details</h2>
+            <p class="text-sm text-slate-400 mb-8 border-b border-white/5 pb-4">
+                {% if profile %}Keep your academic details up to date.{% else %}Define your academic parameters to
+                activate matching algorithms.{% endif %}
+            </p>
+
+            <form action="/edit-profile" method="POST" class="space-y-6">
+
+                <div class="space-y-2">
+                    <label for="full_name"
+                        class="block text-xs font-medium text-slate-400 uppercase tracking-wider">Full Name</label>
+                    <input type="text" id="full_name" name="full_name" required
+                        value="{{ profile.full_name if profile else '' }}"
+                        class="cyber-input w-full px-4 py-3 rounded-xl text-sm"
+                        placeholder="E.g., Harshitha Kasaraneni">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label for="year_of_study"
+                            class="block text-xs font-medium text-slate-400 uppercase tracking-wider">Current Year of
+                            Study</label>
+                        <select id="year_of_study" name="year_of_study" required
+                            class="cyber-input w-full px-4 py-3 rounded-xl text-sm appearance-none">
+                            <option value="">Select Year...</option>
+                            <option value="1st Year" {% if profile and profile.year_of_study=='1st Year' %}selected{%
+                                endif %}>1st Year</option>
+                            <option value="2nd Year" {% if profile and profile.year_of_study=='2nd Year' %}selected{%
+                                endif %}>2nd Year</option>
+                            <option value="3rd Year" {% if profile and profile.year_of_study=='3rd Year' %}selected{%
+                                endif %}>3rd Year</option>
+                            <option value="4th Year" {% if profile and profile.year_of_study=='4th Year' %}selected{%
+                                endif %}>4th Year</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label for="graduation_year"
+                            class="block text-xs font-medium text-slate-400 uppercase tracking-wider">Expected
+                            Graduation</label>
+                        <select id="graduation_year" name="graduation_year" required
+                            class="cyber-input w-full px-4 py-3 rounded-xl text-sm appearance-none">
+                            <option value="">Select Year...</option>
+                            <option value="2024" {% if profile and profile.graduation_year=='2024' %}selected{% endif
+                                %}>2024</option>
+                            <option value="2025" {% if profile and profile.graduation_year=='2025' %}selected{% endif
+                                %}>2025</option>
+                            <option value="2026" {% if profile and profile.graduation_year=='2026' %}selected{% endif
+                                %}>2026</option>
+                            <option value="2027" {% if profile and profile.graduation_year=='2027' %}selected{% endif
+                                %}>2027</option>
+                            <option value="2028" {% if profile and profile.graduation_year=='2028' %}selected{% endif
+                                %}>2028</option>
+                            <option value="2029" {% if profile and profile.graduation_year=='2029' %}selected{% endif
+                                %}>2029</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label for="department"
+                        class="block text-xs font-medium text-slate-400 uppercase tracking-wider">Department</label>
+                    <select id="department" name="department" required
+                        class="cyber-input w-full px-4 py-3 rounded-xl text-sm appearance-none">
+                        <option value="">Select Department...</option>
+                        <option value="School of Computing" {% if profile and profile.department=='School of Computing'
+                            %}selected{% endif %}>School of Computing</option>
+                        <option value="Electrical & Electronics" {% if profile and
+                            profile.department=='Electrical & Electronics' %}selected{% endif %}>Electrical &
+                            Electronics</option>
+                        <option value="Mechanical Engineering" {% if profile and
+                            profile.department=='Mechanical Engineering' %}selected{% endif %}>Mechanical Engineering
+                        </option>
+                        <option value="Civil Engineering" {% if profile and profile.department=='Civil Engineering'
+                            %}selected{% endif %}>Civil Engineering</option>
+                        <option value="Bioengineering" {% if profile and profile.department=='Bioengineering'
+                            %}selected{% endif %}>Bioengineering</option>
+                    </select>
+                </div>
+
+                <div class="space-y-2">
+                    <label for="course"
+                        class="block text-xs font-medium text-slate-400 uppercase tracking-wider">Course</label>
+                    <select id="course" name="course" required
+                        class="cyber-input w-full px-4 py-3 rounded-xl text-sm appearance-none">
+                        <option value="">Select Course...</option>
+                        <option value="B.Tech" {% if profile and profile.course=='B.Tech' %}selected{% endif %}>B.Tech
+                        </option>
+                        <option value="M.Tech" {% if profile and profile.course=='M.Tech' %}selected{% endif %}>M.Tech
+                        </option>
+                        <option value="BCA" {% if profile and profile.course=='BCA' %}selected{% endif %}>BCA</option>
+                        <option value="MCA" {% if profile and profile.course=='MCA' %}selected{% endif %}>MCA</option>
+                        <option value="B.Sc" {% if profile and profile.course=='B.Sc' %}selected{% endif %}>B.Sc
+                        </option>
+                    </select>
+                </div>
+
+                <div class="space-y-2">
+                    <label for="specialization"
+                        class="block text-xs font-medium text-slate-400 uppercase tracking-wider">Specialization / Focus
+                        Area</label>
+                    <input type="text" id="specialization" name="specialization" required
+                        value="{{ profile.specialization if profile else '' }}"
+                        class="cyber-input w-full px-4 py-3 rounded-xl text-sm"
+                        placeholder="E.g., Artificial Intelligence">
+                </div>
+
+                <h3 class="text-xl font-bold text-white pt-6 border-t border-slate-700">Skills</h3>
+
+                <div class="space-y-2">
+                    <label for="skills_input"
+                        class="block text-xs font-medium text-slate-400 uppercase tracking-wider">Technical
+                        Skills</label>
+                    <p class="text-xs text-slate-500 mb-2">Separate skills with commas (e.g., Python, Machine Learning,
+                        React, FastAPI)</p>
+                    <input type="text" id="skills_input" name="skills" value="{{ profile.skills if profile else '' }}"
+                        class="cyber-input w-full px-4 py-3 rounded-xl text-sm font-mono"
+                        placeholder="Python, React, Machine Learning...">
+                </div>
+
+                <div class="pt-6 mt-6 border-t border-white/5">
+                    <button type="submit"
+                        class="w-full inline-flex justify-center items-center py-4 rounded-xl font-medium tracking-wide bg-indigo-600 hover:bg-indigo-500 text-white shadow-neon group transition-colors">
+                        <span>Save Changes</span>
+                        <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
