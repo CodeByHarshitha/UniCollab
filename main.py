@@ -17,6 +17,22 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 templates = Jinja2Templates(directory="templates")
 
+# The get_db function is already imported from database.py.
+# The instruction implies adding get_total_new_requests after a get_db definition,
+# but since it's imported, we'll place it after the templates definition and before dummy_users,
+# which is a logical place for utility functions related to DB access.
+
+def get_total_new_requests(db: Session, user_email: str) -> int:
+    """Gets the count of pending join requests for all projects created by the user."""
+    count = (
+        db.query(models.JoinRequest)
+        .join(models.Project, models.JoinRequest.project_id == models.Project.id)
+        .filter(models.Project.creator_id == user_email)
+        .filter(models.JoinRequest.status == "pending")
+        .count()
+    )
+    return count
+
 @app.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
@@ -117,6 +133,7 @@ async def dashboard(request: Request, db: Session = Depends(get_db)):
         "has_profile": has_profile,
         "profile": profile, # This is now a SQLAlchemy object or None
         "skills": skills,
+        "total_new_requests": get_total_new_requests(db, user_email),
         "active_page": "dashboard"
     })
 
@@ -209,7 +226,8 @@ async def view_profile_get(request: Request, db: Session = Depends(get_db)):
         "email": user_email,
         "profile": profile,
         "skills": skills_list,
-        "updated": updated
+        "updated": updated,
+        "total_new_requests": get_total_new_requests(db, user_email)
     })
 
 import json
@@ -305,7 +323,7 @@ discover_users = [
 ]
 
 @app.get("/discover", response_class=HTMLResponse)
-async def discover_get(request: Request):
+async def discover_get(request: Request, db: Session = Depends(get_db)):
     user_email = request.cookies.get("user_email")
     if not user_email or user_email not in dummy_users:
         return RedirectResponse(url="/login", status_code=303)
@@ -317,6 +335,7 @@ async def discover_get(request: Request):
         "request": request, 
         "email": user_email,
         "users": other_users,
+        "total_new_requests": get_total_new_requests(db, user_email),
         "active_page": "discover"
     })
 
@@ -346,53 +365,61 @@ async def request_collaboration(
     return RedirectResponse(url="/discover", status_code=303)
 
 @app.get("/requests", response_class=HTMLResponse)
-async def requests_get(request: Request):
+async def requests_get(request: Request, db: Session = Depends(get_db)):
     user_email = request.cookies.get("user_email")
     if not user_email or user_email not in dummy_users:
         return RedirectResponse(url="/login", status_code=303)
         
-    # Find requests sent to this user
+    # Aggregate all "pending" requests for projects created by this user
+    db_incoming_requests = (
+        db.query(models.JoinRequest, models.Project)
+        .join(models.Project, models.JoinRequest.project_id == models.Project.project_id)
+        .filter(models.Project.creator_id == user_email)
+        .filter(models.JoinRequest.status == "pending")
+        .all()
+    )
+    
     incoming_requests = []
-    for req in dummy_requests:
-        if req["receiver_email"] == user_email:
-            # We need to enrich the request with the sender's details for UI display
-            sender_name = "Unknown User"
-            sender_skills = []
+    for req, proj in db_incoming_requests:
+        sender_name = req.requester_id.split("@")[0].capitalize()
+        sender_dept = "Unknown"
+        sender_year = "Unknown"
+        sender_skills = []
+        
+        # Check DB for Profile info
+        sender_user = db.query(models.User).filter(models.User.email == req.requester_id).first()
+        if sender_user:
+            sender_prof = db.query(models.Profile).filter(models.Profile.user_id == sender_user.id).first()
+            if sender_prof:
+                sender_name = sender_prof.full_name
+                sender_dept = sender_prof.department
+                sender_year = sender_prof.year_of_study
+                if sender_prof.skills:
+                    sender_skills = sender_prof.skills.split(",")
+                    
+        # Fallback to dummy_profiles if DB profile is missing but they exist in dummy
+        if req.requester_id in dummy_profiles and sender_name == req.requester_id.split("@")[0].capitalize():
+            prof = dummy_profiles[req.requester_id]
+            sender_name = prof.get("full_name", sender_name)
+            sender_dept = prof.get("department", sender_dept)
+            sender_year = prof.get("year_of_study", sender_year)
+            sender_skills = dummy_skills.get(req.requester_id, [])
             
-            # Check if sender is in our dummy discover users
-            for u in discover_users:
-                if u["email"] == req["sender_email"]:
-                    sender_name = u["name"]
-                    sender_skills = u["skills"]
-                    break
-            # Or if it's the current user (if testing with themselves, though filtered above)
-            # Or check dummy_profiles (for actual registered test users)
-            if req["sender_email"] in dummy_profiles:
-                 sender_name = dummy_profiles[req["sender_email"]].get("full_name", sender_name)
-                 sender_skills = dummy_skills.get(req["sender_email"], [])
-            
-            enriched_req = {
-                **req,
-                "sender_name": sender_name,
-                "sender_skills": sender_skills
-            }
-            incoming_requests.append(enriched_req)
-            
-    # Also find requests sent BY this user to see status
-    outgoing_requests = [req for req in dummy_requests if req["sender_email"] == user_email]
-    for req in outgoing_requests:
-         receiver_name = req["receiver_email"]
-         for u in discover_users:
-             if u["email"] == req["receiver_email"]:
-                 receiver_name = u["name"]
-                 break
-         req["receiver_name"] = receiver_name
+        incoming_requests.append({
+            "request_id": req.request_id,
+            "project_title": proj.title,
+            "sender_email": req.requester_id,
+            "sender_name": sender_name,
+            "sender_department": sender_dept,
+            "sender_year": sender_year,
+            "sender_skills": sender_skills
+        })
 
     return templates.TemplateResponse("requests.html", {
         "request": request, 
         "email": user_email,
         "incoming_requests": incoming_requests,
-        "outgoing_requests": outgoing_requests,
+        "total_new_requests": get_total_new_requests(db, user_email),
         "active_page": "requests"
     })
 
@@ -575,6 +602,7 @@ async def projects_get(request: Request, db: Session = Depends(get_db)):
         "request": request, 
         "email": user_email,
         "projects": enriched_projects,
+        "total_new_requests": get_total_new_requests(db, user_email),
         "active_page": "projects"
     })
 
@@ -715,7 +743,7 @@ async def respond_project_request(
     return RedirectResponse(url=f"/project-status/{project.project_id}", status_code=303)
 
 @app.get("/matches", response_class=HTMLResponse)
-async def matches_get(request: Request):
+async def matches_get(request: Request, db: Session = Depends(get_db)):
     user_email = request.cookies.get("user_email")
     if not user_email or user_email not in dummy_users:
         return RedirectResponse(url="/login", status_code=303)
@@ -732,11 +760,12 @@ async def matches_get(request: Request):
         "request": request, 
         "email": user_email,
         "matches": all_matches,
+        "total_new_requests": get_total_new_requests(db, user_email),
         "active_page": "matches"
     })
 
 @app.get("/ideas", response_class=HTMLResponse)
-async def ideas_get(request: Request):
+async def ideas_get(request: Request, db: Session = Depends(get_db)):
     user_email = request.cookies.get("user_email")
     if not user_email or user_email not in dummy_users:
         return RedirectResponse(url="/login", status_code=303)
@@ -759,6 +788,7 @@ async def ideas_get(request: Request):
         "request": request,
         "email": user_email,
         "ideas": enriched_ideas,
+        "total_new_requests": get_total_new_requests(db, user_email),
         "active_page": "ideas"
     })
 

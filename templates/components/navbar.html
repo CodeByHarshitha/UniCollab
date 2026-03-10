@@ -14,6 +14,34 @@
         <span class="text-xl font-bold tracking-tight text-white/90">UniCollab.</span>
     </div>
 
+    <!-- Central Navigation Links -->
+    <nav class="hidden md:flex items-center gap-1 mx-auto">
+        <a href="/dashboard"
+            class="px-4 py-2 rounded-lg text-sm font-medium transition-colors {% if active_page == 'dashboard' %}text-white bg-white/10{% else %}text-slate-400 hover:text-white hover:bg-white/5{% endif %}">
+            Dashboard
+        </a>
+        <a href="/discover"
+            class="px-4 py-2 rounded-lg text-sm font-medium transition-colors {% if active_page == 'discover' %}text-white bg-white/10{% else %}text-slate-400 hover:text-white hover:bg-white/5{% endif %}">
+            Discover
+        </a>
+        <a href="/projects"
+            class="px-4 py-2 rounded-lg text-sm font-medium transition-colors {% if active_page == 'projects' %}text-white bg-white/10{% else %}text-slate-400 hover:text-white hover:bg-white/5{% endif %}">
+            Join Projects
+        </a>
+        <a href="/my-projects"
+            class="px-4 py-2 rounded-lg text-sm font-medium transition-colors {% if active_page == 'my_projects' %}text-white bg-white/10{% else %}text-slate-400 hover:text-white hover:bg-white/5{% endif %}">
+            My Projects
+        </a>
+        <a href="/requests"
+            class="px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 {% if active_page == 'requests' %}text-white bg-white/10{% else %}text-slate-400 hover:text-white hover:bg-white/5{% endif %}">
+            Requests
+            {% if total_new_requests and total_new_requests > 0 %}
+            <span class="px-1.5 py-0.5 rounded-full bg-rose-500/20 text-rose-400 text-[10px] font-bold">{{
+                total_new_requests }}</span>
+            {% endif %}
+        </a>
+    </nav>
+
     <!-- Header Actions -->
     <div class="flex items-center gap-6">
         {% block global_actions %}{% endblock %}
