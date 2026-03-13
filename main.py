@@ -26,7 +26,7 @@ def get_total_new_requests(db: Session, user_email: str) -> int:
     """Gets the count of pending join requests for all projects created by the user."""
     count = (
         db.query(models.JoinRequest)
-        .join(models.Project, models.JoinRequest.project_id == models.Project.id)
+        .join(models.Project, models.JoinRequest.project_id == models.Project.project_id)
         .filter(models.Project.creator_id == user_email)
         .filter(models.JoinRequest.status == "pending")
         .count()
@@ -506,7 +506,25 @@ async def create_project_post(request: Request, db: Session = Depends(get_db)):
     db.add(creator_member)
     db.commit()
     
-    return RedirectResponse(url="/my-projects", status_code=303)
+    return RedirectResponse(url=f"/project-broadcasted/{new_project.project_id}", status_code=303)
+
+@app.get("/project-broadcasted/{project_id}", response_class=HTMLResponse)
+async def project_broadcasted(request: Request, project_id: int, db: Session = Depends(get_db)):
+    user_email = request.cookies.get("user_email")
+    if not user_email or user_email not in dummy_users:
+        return RedirectResponse(url="/login", status_code=303)
+
+    project = db.query(models.Project).filter(models.Project.project_id == project_id).first()
+    if not project or project.creator_id != user_email:
+        # If project not found or doesn't belong to this user, fall back to my-projects
+        return RedirectResponse(url="/my-projects", status_code=303)
+
+    return templates.TemplateResponse("project_broadcasted.html", {
+        "request": request,
+        "email": user_email,
+        "project": project,
+        "active_page": "my_projects"
+    })
 
 @app.get("/my-projects", response_class=HTMLResponse)
 async def my_projects_get(request: Request, db: Session = Depends(get_db)):
