@@ -1,146 +1,205 @@
 {% extends "base.html" %}
 
-{% block title %}Projects - UniCollab{% endblock %}
-{% block page_title %}Active Operations{% endblock %}
+{% block title %}Project Feed — UniCollab{% endblock %}
+{% block page_title %}Project Feed{% endblock %}
 
 {% block content %}
-{% from 'components/card.html' import card %}
-{% from 'components/skill_tag.html' import skill_tag %}
-{% from 'components/button.html' import btn_primary, btn_secondary %}
+<div class="max-w-4xl mx-auto space-y-6">
 
-<div class="max-w-6xl mx-auto space-y-8">
-
-    <!-- Header Section & Search -->
-    <div
-        class="glass-panel p-6 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden text-center md:text-left">
-        <div
-            class="absolute -left-20 -bottom-20 w-64 h-64 bg-indigo-500/10 blur-[60px] rounded-full pointer-events-none">
-        </div>
-
-        <div class="relative z-10 flex-1 w-full max-w-md">
-            <h2 class="text-2xl font-bold text-white mb-4">Campus Initiatives</h2>
-            <div class="relative group">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <svg class="h-5 w-5 text-slate-500 group-focus-within:text-indigo-400 transition-colors" fill="none"
-                        stroke="currentColor" viewBox="0 0 24 24">
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-white flex items-center gap-3">
+                <span class="inline-flex w-9 h-9 rounded-xl bg-indigo-500/15 border border-indigo-500/25 items-center justify-center shrink-0">
+                    <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
                     </svg>
-                </div>
-                <input type="text" id="searchInput"
-                    class="cyber-input w-full pl-11 pr-4 py-2.5 rounded-xl text-sm placeholder-slate-500"
-                    placeholder="Search operations by title or skill...">
-            </div>
+                </span>
+                Project Feed
+            </h1>
+            <p class="text-slate-400 text-sm mt-1 ml-12">Discover projects posted by students and request to join a team.</p>
         </div>
 
-        <div class="relative z-10 shrink-0">
-            {{ btn_primary('Initialize Operation', href='/create-project', icon='<svg
-                class="w-4 h-4 group-hover:rotate-90 transition-transform duration-300" fill="none"
-                stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-            </svg>', class='shadow-[0_0_15px_rgba(99,102,241,0.3)]') }}
-        </div>
+        <!-- Post a Project CTA -->
+        <a href="/create-project"
+            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold tracking-wide transition-all shadow-[0_0_15px_rgba(99,102,241,0.3)] hover:shadow-[0_0_25px_rgba(99,102,241,0.5)] shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Post a Project
+        </a>
     </div>
 
-    <!-- Projects Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="cardGrid">
-
-        {% if projects|length == 0 %}
-        <div
-            class="col-span-1 lg:col-span-2 xl:col-span-3 glass-panel p-12 rounded-2xl text-center flex flex-col items-center justify-center min-h-[300px]">
-            <div
-                class="w-16 h-16 rounded-full bg-slate-800/50 border border-slate-700 flex items-center justify-center mb-4">
-                <svg class="w-8 h-8 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
-                    </path>
-                </svg>
-            </div>
-            <h3 class="text-xl font-bold text-white mb-2">No Active Databases Found</h3>
-            <p class="text-slate-400 max-w-md">The project directory is currently empty. Be the first to establish a new
-                operational node.</p>
-            {{ btn_secondary('Create Database', href='/create-project', class='mt-6') }}
+    <!-- Search Bar -->
+    <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
         </div>
-        {% endif %}
+        <input type="text" id="searchInput"
+            class="cyber-input w-full pl-10 pr-4 py-3 rounded-xl text-sm placeholder-slate-500"
+            placeholder="Search by project name, skill, or creator...">
+    </div>
 
+    <!-- Empty State -->
+    {% if projects|length == 0 %}
+    <div class="glass-panel rounded-2xl p-16 text-center flex flex-col items-center">
+        <div class="w-16 h-16 rounded-2xl bg-slate-800/60 border border-slate-700 flex items-center justify-center mb-5">
+            <svg class="w-8 h-8 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+            </svg>
+        </div>
+        <h3 class="text-xl font-bold text-white mb-2">No Projects Yet</h3>
+        <p class="text-slate-400 text-sm max-w-sm mb-6">Be the first to post a project and start building your dream team.</p>
+        <a href="/create-project" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold transition-colors">
+            Post a Project
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Project Cards Feed -->
+    <div class="space-y-4" id="feedGrid">
         {% for proj in projects %}
-        <div class="card-item"
-            data-search="{{ proj.title | lower }} {{ proj.skills | join(' ') | lower }} {{ proj.type | lower }}">
+        <article class="feed-card glass-panel rounded-2xl p-6 hover:border-indigo-500/20 border border-transparent transition-all duration-300 hover:shadow-[0_0_30px_rgba(99,102,241,0.08)] relative overflow-hidden group"
+            data-search="{{ proj.title | lower }} {{ proj.required_skills | lower }} {{ proj.creator_name | lower }} {{ proj.description | lower }}">
 
-            {% set items_array = [
-            {'label': 'Lead Coordinator', 'values': [proj.creator_name.split()[0] if proj.creator_name else "Unknown"]}
-            ] %}
+            <!-- Subtle top accent line -->
+            <div class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-indigo-500/0 via-indigo-500/40 to-indigo-500/0 opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
-            {% set action_form %}
-            {% if proj.members|length >= proj.team_size %}
-            <button disabled
-                class="w-full py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-500 font-bold uppercase tracking-widest text-xs cursor-not-allowed flex items-center justify-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
-                    </path>
-                </svg>
-                Capacity Reached ({{ proj.members|length }}/{{ proj.team_size }})
-            </button>
-            {% elif email in proj.members %}
-            <button disabled
-                class="w-full py-2.5 rounded-lg bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 font-bold uppercase tracking-widest text-xs cursor-not-allowed flex items-center justify-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                Active Member ({{ proj.members|length }}/{{ proj.team_size }})
-            </button>
-            {% elif proj.has_requested %}
-            <button disabled
-                class="w-full py-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold uppercase tracking-widest text-xs cursor-not-allowed flex items-center justify-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                </svg>
-                Request Sent
-            </button>
-            {% else %}
-            <form action="/request-project-join" method="POST">
-                <input type="hidden" name="project_id" value="{{ proj.id }}">
-                {{ btn_primary('Join Project (' ~ proj.members|length ~ '/' ~ proj.team_size ~ ')', type='submit',
-                icon='<svg class="w-4 h-4 group-hover/join:translate-x-1 transition-transform" fill="none"
-                    stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1">
-                    </path>
-                </svg>', class='w-full text-xs uppercase tracking-widest bg-slate-800 hover:bg-cyan-500
-                border-slate-600') }}
-            </form>
-            {% endif %}
-            {% endset %}
+            <div class="flex flex-col sm:flex-row gap-5">
 
-            {{ card(title=proj.title, subtitle=(proj.description | truncate(100)), badge=proj.type, skills=proj.skills,
-            items=items_array, members=proj.member_names, button_macro=action_form) }}
-        </div>
+                <!-- Left: Avatar column -->
+                <div class="shrink-0">
+                    <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-[0_0_12px_rgba(99,102,241,0.3)]">
+                        {{ proj.creator_name[0] | upper if proj.creator_name else 'U' }}
+                    </div>
+                </div>
+
+                <!-- Right: Content -->
+                <div class="flex-1 min-w-0">
+
+                    <!-- Creator + Team size -->
+                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mb-3">
+                        <span class="text-sm font-semibold text-white">{{ proj.creator_name }}</span>
+                        <span class="text-slate-600 text-xs">•</span>
+                        <span class="text-xs text-slate-500 font-mono">Posted a project</span>
+                        <span class="ml-auto inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800 border border-slate-700 text-xs text-slate-300">
+                            <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            Team Size: {{ proj.team_size }}
+                        </span>
+                    </div>
+
+                    <!-- Project Title -->
+                    <h2 class="text-xl font-bold text-white mb-2 leading-snug group-hover:text-indigo-300 transition-colors">
+                        {{ proj.title }}
+                    </h2>
+
+                    <!-- Description -->
+                    <p class="text-slate-300 text-sm leading-relaxed mb-4 line-clamp-3">
+                        {{ proj.description }}
+                    </p>
+
+                    <!-- Skills Tags -->
+                    {% if proj.required_skills %}
+                    <div class="flex flex-wrap gap-2 mb-5">
+                        {% for skill in proj.required_skills.split(',') %}
+                        {% if skill.strip() %}
+                        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/25 text-indigo-300 text-xs font-medium">
+                            {{ skill.strip() }}
+                        </span>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Member Progress + Action Button -->
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-4 border-t border-white/5">
+
+                        <!-- Member count bar -->
+                        <div class="flex items-center gap-3 text-xs text-slate-400">
+                            <div class="flex -space-x-1">
+                                {% for name in proj.member_names[:4] %}
+                                <div class="w-6 h-6 rounded-full bg-gradient-to-br from-slate-600 to-slate-700 border-2 border-slate-900 flex items-center justify-center text-[9px] font-bold text-slate-300">
+                                    {{ name[0] | upper }}
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <span>{{ proj.members|length }} / {{ proj.team_size }} members joined</span>
+                        </div>
+
+                        <!-- CTA Button -->
+                        <div class="shrink-0">
+                            {% if proj.members|length >= proj.team_size %}
+                            <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-500 text-xs font-bold uppercase tracking-wider cursor-not-allowed">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                </svg>
+                                Team Full
+                            </span>
+                            {% elif email in proj.members %}
+                            <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 text-xs font-bold uppercase tracking-wider cursor-not-allowed">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                You're a Member
+                            </span>
+                            {% elif proj.has_requested %}
+                            <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase tracking-wider cursor-not-allowed">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                Request Sent
+                            </span>
+                            {% else %}
+                            <form action="/request-project-join" method="POST">
+                                <input type="hidden" name="project_id" value="{{ proj.id }}">
+                                <button type="submit"
+                                    class="inline-flex items-center gap-1.5 px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold uppercase tracking-wider transition-all shadow-[0_0_12px_rgba(99,102,241,0.25)] hover:shadow-[0_0_20px_rgba(99,102,241,0.45)] group/btn">
+                                    <svg class="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                                    </svg>
+                                    Request to Join
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </article>
         {% endfor %}
+    </div>
 
+    <!-- No results message (shown by JS) -->
+    <div id="noResults" class="hidden text-center py-12 text-slate-500 text-sm">
+        No projects match your search.
     </div>
 
 </div>
 
+{% block scripts %}
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const searchInput = document.getElementById('searchInput');
-        const cards = document.querySelectorAll('.card-item');
+    const searchInput = document.getElementById('searchInput');
+    const cards = document.querySelectorAll('.feed-card');
+    const noResults = document.getElementById('noResults');
 
-        if (searchInput) {
-            searchInput.addEventListener('input', (e) => {
-                const term = e.target.value.toLowerCase();
-                cards.forEach(card => {
-                    const searchData = card.getAttribute('data-search');
-                    if (searchData.includes(term)) {
-                        card.style.display = 'block';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-            });
-        }
+    searchInput && searchInput.addEventListener('input', function() {
+        const term = this.value.toLowerCase().trim();
+        let visible = 0;
+        cards.forEach(function(card) {
+            const match = !term || card.dataset.search.includes(term);
+            card.style.display = match ? '' : 'none';
+            if (match) visible++;
+        });
+        noResults.classList.toggle('hidden', visible > 0 || !term);
     });
 </script>
+{% endblock %}
+
 {% endblock %}

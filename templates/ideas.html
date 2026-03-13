@@ -1,220 +1,323 @@
 {% extends "base.html" %}
 
-{% block title %}Idea Marketplace - UniCollab{% endblock %}
-{% block page_title %}Concept Exchange{% endblock %}
+{% block title %}{% if my_hackathons_view %}My Hackathons{% else %}Hackathon Feed{% endif %} — UniCollab{% endblock %}
+{% block page_title %}{% if my_hackathons_view %}My Hackathons{% else %}Hackathon Feed{% endif %}{% endblock %}
 
 {% block content %}
-{% from 'components/card.html' import card %}
-{% from 'components/skill_tag.html' import skill_tag %}
-{% from 'components/button.html' import btn_primary, btn_secondary %}
+<div class="max-w-4xl mx-auto space-y-6">
 
-<div class="max-w-6xl mx-auto flex flex-col lg:flex-row gap-8 items-start">
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-white flex items-center gap-3">
+                <span class="inline-flex w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/25 items-center justify-center shrink-0">
+                    <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                </span>
+                {% if my_hackathons_view %}My Hackathons{% else %}Hackathon Feed{% endif %}
+            </h1>
+            <p class="text-slate-400 text-sm mt-1 ml-12">
+                {% if my_hackathons_view %}
+                    Hackathon teams you've posted. Manage your open spots here.
+                {% else %}
+                    Find hackathon teams looking for members and request to join.
+                {% endif %}
+            </p>
+        </div>
 
-    <!-- Ideas Feed Column -->
-    <div class="flex-grow w-full space-y-6">
+        <!-- Post a Hackathon CTA -->
+        <a href="/hackathon-feed#post-hackathon"
+            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-900 text-sm font-bold tracking-wide transition-all shadow-[0_0_15px_rgba(245,158,11,0.3)] hover:shadow-[0_0_25px_rgba(245,158,11,0.5)] shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Post a Hackathon
+        </a>
+    </div>
 
-        <div
-            class="glass-panel p-6 rounded-2xl relative overflow-hidden mb-8 flex flex-col md:flex-row justify-between items-center gap-6">
-            <div
-                class="absolute -right-20 -bottom-20 w-64 h-64 bg-orange-500/10 blur-[60px] rounded-full pointer-events-none">
+    <!-- Search Bar -->
+    {% if not my_hackathons_view %}
+    <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+        </div>
+        <input type="text" id="searchInput"
+            class="cyber-input w-full pl-10 pr-4 py-3 rounded-xl text-sm placeholder-slate-500"
+            placeholder="Search by hackathon name, theme, or skills...">
+    </div>
+    {% endif %}
+
+    <div class="flex flex-col lg:flex-row gap-8 items-start">
+
+        <!-- Feed Column -->
+        <div class="flex-1 min-w-0 space-y-4">
+
+            <!-- Empty State -->
+            {% if ideas|length == 0 %}
+            <div class="glass-panel rounded-2xl p-16 text-center flex flex-col items-center">
+                <div class="w-16 h-16 rounded-2xl bg-slate-800/60 border border-slate-700 flex items-center justify-center mb-5">
+                    <svg class="w-8 h-8 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                </div>
+                {% if my_hackathons_view %}
+                <h3 class="text-xl font-bold text-white mb-2">No Hackathon Posts Yet</h3>
+                <p class="text-slate-400 text-sm max-w-sm mb-6">You haven't posted any hackathon teams. Start one and find your squad.</p>
+                {% else %}
+                <h3 class="text-xl font-bold text-white mb-2">No Hackathons Posted Yet</h3>
+                <p class="text-slate-400 text-sm max-w-sm mb-6">Be the first to post a hackathon team and find collaborators.</p>
+                {% endif %}
+                <a href="/hackathon-feed#post-hackathon" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-900 text-sm font-bold transition-colors">
+                    Post a Hackathon
+                </a>
+            </div>
+            {% endif %}
+
+            <!-- Hackathon Cards -->
+            <div id="feedGrid" class="space-y-4">
+                {% for idea in ideas %}
+                <article class="hackathon-card glass-panel rounded-2xl p-6 border border-transparent hover:border-amber-500/20 transition-all duration-300 hover:shadow-[0_0_30px_rgba(245,158,11,0.07)] relative overflow-hidden group"
+                    data-search="{{ idea.title | lower }} {{ idea.category | lower }} {{ idea.skills | join(' ') | lower }} {{ idea.description | lower }} {{ idea.creator_name | lower }}">
+
+                    <!-- Top accent -->
+                    <div class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-amber-500/0 via-amber-500/50 to-amber-500/0 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+
+                    <div class="flex flex-col sm:flex-row gap-5">
+
+                        <!-- Avatar -->
+                        <div class="shrink-0">
+                            <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-slate-900 font-bold text-lg shadow-[0_0_12px_rgba(245,158,11,0.3)]">
+                                {{ idea.creator_name[0] | upper if idea.creator_name else 'U' }}
+                            </div>
+                        </div>
+
+                        <!-- Content -->
+                        <div class="flex-1 min-w-0">
+
+                            <!-- Creator line -->
+                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mb-3">
+                                <span class="text-sm font-semibold text-white">{{ idea.creator_name }}</span>
+                                <span class="text-slate-600 text-xs">•</span>
+                                <span class="text-xs text-slate-500 font-mono">Looking for hackathon teammates</span>
+                                <span class="ml-auto inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800 border border-slate-700 text-xs text-slate-300">
+                                    <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    </svg>
+                                    Team Size: {{ idea.team_size }}
+                                </span>
+                            </div>
+
+                            <!-- Hackathon Name -->
+                            <h2 class="text-xl font-bold text-white mb-1.5 group-hover:text-amber-300 transition-colors">
+                                {{ idea.title }}
+                            </h2>
+
+                            <!-- Theme badge -->
+                            {% if idea.category %}
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-400 text-xs font-bold uppercase tracking-wider">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                                    </svg>
+                                    {{ idea.category }}
+                                </span>
+                            </div>
+                            {% endif %}
+
+                            <!-- Description -->
+                            <p class="text-slate-300 text-sm leading-relaxed mb-4 line-clamp-3">
+                                {{ idea.description }}
+                            </p>
+
+                            <!-- Skills Needed -->
+                            {% if idea.skills %}
+                            <div class="mb-2">
+                                <span class="text-xs text-slate-500 font-medium uppercase tracking-wider mb-2 block">Skills Needed</span>
+                                <div class="flex flex-wrap gap-2">
+                                    {% for skill in idea.skills %}
+                                    {% if skill.strip() %}
+                                    <span class="inline-flex items-center px-3 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-medium">
+                                        {{ skill.strip() }}
+                                    </span>
+                                    {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <!-- Divider + Action -->
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-4 mt-4 border-t border-white/5">
+
+                                <!-- Member progress -->
+                                <div class="flex items-center gap-2 text-xs text-slate-400">
+                                    <div class="w-24 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                                        <div class="h-full bg-gradient-to-r from-amber-500 to-orange-400 rounded-full transition-all"
+                                            style="width: {{ [(idea.members_count / idea.team_size * 100), 100] | min }}%"></div>
+                                    </div>
+                                    <span>{{ idea.members_count }} / {{ idea.team_size }} spots filled</span>
+                                </div>
+
+                                <!-- CTA -->
+                                <div class="shrink-0">
+                                    {% if idea.members_count >= idea.team_size %}
+                                    <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-500 text-xs font-bold uppercase tracking-wider cursor-not-allowed">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                        </svg>
+                                        Team Full
+                                    </span>
+                                    {% elif email in idea.members %}
+                                    <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold uppercase tracking-wider cursor-not-allowed">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                        You're on the Team
+                                    </span>
+                                    {% else %}
+                                    <form action="/join-idea" method="POST">
+                                        <input type="hidden" name="idea_id" value="{{ idea.id }}">
+                                        <button type="submit"
+                                            class="inline-flex items-center gap-1.5 px-5 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-900 text-xs font-bold uppercase tracking-wider transition-all shadow-[0_0_12px_rgba(245,158,11,0.25)] hover:shadow-[0_0_20px_rgba(245,158,11,0.45)] group/btn">
+                                            <svg class="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                                            </svg>
+                                            Request to Join Team
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </article>
+                {% endfor %}
             </div>
 
-            <div class="relative z-10 w-full mr-auto max-w-md">
-                <h2 class="text-2xl font-bold text-white mb-2">Concept Incubation</h2>
-                <div class="relative group mt-4">
-                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <svg class="h-5 w-5 text-slate-500 group-focus-within:text-orange-400 transition-colors"
-                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            <div id="noResults" class="hidden text-center py-12 text-slate-500 text-sm">
+                No hackathons match your search.
+            </div>
+        </div>
+
+        <!-- Sidebar: Post Hackathon Form -->
+        {% if not my_hackathons_view %}
+        <aside class="w-full lg:w-[320px] shrink-0" id="post-hackathon">
+            <div class="glass-panel p-6 rounded-2xl sticky top-24 border border-amber-500/20 relative overflow-hidden">
+                <div class="absolute -top-16 -right-16 w-36 h-36 bg-amber-500/10 blur-[40px] rounded-full pointer-events-none"></div>
+
+                <div class="flex items-center gap-3 mb-5 pb-4 border-b border-white/5 relative z-10">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shrink-0 shadow-[0_0_12px_rgba(245,158,11,0.3)]">
+                        <svg class="w-5 h-5 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                         </svg>
                     </div>
-                    <input type="text" id="searchInput"
-                        class="cyber-input w-full pl-11 pr-4 py-2.5 rounded-xl text-sm placeholder-slate-500"
-                        placeholder="Search concepts by keywords...">
+                    <div>
+                        <h3 class="text-base font-bold text-white">Post a Hackathon</h3>
+                        <p class="text-xs text-slate-500">Find your squad</p>
+                    </div>
                 </div>
-            </div>
 
-            <div class="relative z-10 hidden md:block w-48 text-right">
-                <p class="text-xs text-slate-400">Validate models and recruit squads before committing resources.</p>
-            </div>
-        </div>
+                <form action="/create-idea" method="POST" class="space-y-3 relative z-10">
 
-        {% if ideas|length == 0 %}
-        <div class="glass-panel p-12 rounded-2xl text-center flex flex-col items-center justify-center min-h-[300px]">
-            <div
-                class="w-16 h-16 rounded-full bg-slate-800/50 border border-slate-700 flex items-center justify-center mb-4">
-                <svg class="w-8 h-8 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
-                    </path>
-                </svg>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1.5">Hackathon Name *</label>
+                        <input type="text" name="title"
+                            class="cyber-input w-full px-3 py-2.5 rounded-lg text-sm placeholder:text-slate-600"
+                            placeholder="e.g. AI Innovation Hackathon" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1.5">Theme / Category *</label>
+                        <div class="relative">
+                            <select name="category"
+                                class="cyber-input w-full px-3 py-2.5 rounded-lg text-sm appearance-none cursor-pointer text-slate-300" required>
+                                <option value="" disabled selected class="bg-slate-900 text-slate-500">Select theme...</option>
+                                <option value="Artificial Intelligence" class="bg-slate-900">Artificial Intelligence</option>
+                                <option value="Web Development" class="bg-slate-900">Web Development</option>
+                                <option value="Healthcare Tech" class="bg-slate-900">Healthcare Tech</option>
+                                <option value="FinTech" class="bg-slate-900">FinTech</option>
+                                <option value="Sustainability" class="bg-slate-900">Sustainability</option>
+                                <option value="EdTech" class="bg-slate-900">EdTech</option>
+                                <option value="Cybersecurity" class="bg-slate-900">Cybersecurity</option>
+                                <option value="Open Innovation" class="bg-slate-900">Open Innovation</option>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-slate-500">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1.5">Description *</label>
+                        <textarea name="description"
+                            class="cyber-input w-full px-3 py-2.5 rounded-lg text-sm placeholder:text-slate-600 text-slate-300 min-h-[90px] resize-y"
+                            placeholder="What are you building? What's the goal?" required></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1.5">Skills Needed</label>
+                        <input type="text" name="skills"
+                            class="cyber-input w-full px-3 py-2.5 rounded-lg text-sm placeholder:text-slate-600 text-slate-300"
+                            placeholder="Python, ML, UI Design...">
+                        <p class="text-xs text-slate-600 mt-1">Comma separated</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1.5">Team Size *</label>
+                        <div class="relative">
+                            <select name="team_size"
+                                class="cyber-input w-full px-3 py-2.5 rounded-lg text-sm appearance-none cursor-pointer text-slate-300" required>
+                                <option value="2" class="bg-slate-900">2 members</option>
+                                <option value="3" class="bg-slate-900">3 members</option>
+                                <option value="4" selected class="bg-slate-900">4 members</option>
+                                <option value="5" class="bg-slate-900">5 members</option>
+                                <option value="6" class="bg-slate-900">6 members</option>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-slate-500">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit"
+                        class="w-full py-3 mt-1 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold text-sm uppercase tracking-wide transition-all duration-200 flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(245,158,11,0.35)] hover:shadow-[0_0_25px_rgba(245,158,11,0.55)]">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        Post Hackathon
+                    </button>
+                </form>
             </div>
-            <h3 class="text-xl font-bold text-white mb-2">Zero Concepts Detected</h3>
-            <p class="text-slate-400 max-w-md">The marketplace is vacant. Initialize a new broadcast using the console
-                terminal.</p>
-        </div>
+        </aside>
         {% endif %}
 
-        <div class="grid grid-cols-1 gap-6" id="cardGrid">
-            {% for idea in ideas %}
-            <div class="card-item"
-                data-search="{{ idea.title | lower }} {{ idea.category | lower }} {{ idea.skills | join(' ') | lower }} {{ idea.description | lower }}">
-                {% set items_array = [
-                {'label': 'Origin', 'values': [idea.creator_name]},
-                {'label': 'Network Interest', 'values': [(idea.members_count|string) ~ ' / ' ~ (idea.team_size|string)]}
-                ] %}
-
-                {% set action_form %}
-                {% if idea.members_count >= idea.team_size %}
-                <button disabled
-                    class="w-full px-6 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-500 font-bold uppercase tracking-widest text-xs cursor-not-allowed">Bandwidth
-                    Exceeded</button>
-                {% elif email in idea.members %}
-                <button disabled
-                    class="w-full px-6 py-2.5 rounded-lg bg-green-500/10 border border-green-500/30 text-green-400 font-bold uppercase tracking-widest text-xs cursor-not-allowed flex items-center justify-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    Signal Locked
-                </button>
-                {% else %}
-                <form action="/join-idea" method="POST" class="m-0">
-                    <input type="hidden" name="idea_id" value="{{ idea.id }}">
-                    {{ btn_primary('Join Idea', type='submit', icon='<svg
-                        class="w-4 h-4 group-hover/join:translate-x-1 transition-transform" fill="none"
-                        stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                    </svg>', class='w-full sm:min-w-[140px] px-6 py-2.5 rounded-lg bg-slate-800 hover:bg-orange-500
-                    text-slate-300 border border-slate-600 hover:border-orange-400 hover:text-slate-900 font-bold
-                    uppercase tracking-widest text-xs transition-all duration-300 group/join
-                    shadow-[0_0_10px_rgba(0,0,0,0.5)] hover:shadow-[0_0_20px_rgba(249,115,22,0.4)]') }}
-                </form>
-                {% endif %}
-                {% endset %}
-
-                <!-- We wrap the generic card with an orange hover effect to match ideas style -->
-                <div class="hover:shadow-[0_10px_30px_-10px_rgba(249,115,22,0.1)] transition-all h-full">
-                    {{ card(title=idea.title, subtitle=idea.description, badge=idea.category, skills=idea.skills,
-                    items=items_array, members=None, button_macro=action_form) }}
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <!-- Sidebar Compose Form -->
-    <div class="w-full lg:w-[340px] shrink-0">
-        <div class="glass-panel p-6 rounded-2xl sticky top-24 border border-orange-500/20 relative overflow-hidden">
-            <div
-                class="absolute -top-20 -right-20 w-40 h-40 bg-orange-500/10 blur-[40px] rounded-full pointer-events-none">
-            </div>
-
-            <div class="flex items-center gap-3 mb-6 relative z-10 pb-4 border-b border-white/5 disabled:">
-                <div
-                    class="w-10 h-10 rounded-xl bg-gradient-to-tr from-orange-500 to-pink-600 p-[1px] shadow-[0_0_15px_rgba(249,115,22,0.3)] shrink-0">
-                    <div class="w-full h-full bg-slate-900 rounded-[10px] flex items-center justify-center">
-                        <svg class="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                            </path>
-                        </svg>
-                    </div>
-                </div>
-                <h3 class="text-lg font-bold text-white leading-tight">Transmit<br>New Concept</h3>
-            </div>
-
-            <form action="/create-idea" method="POST" class="space-y-4 relative z-10">
-
-                <div>
-                    <input type="text" name="title"
-                        class="cyber-input w-full px-3 py-2.5 rounded-lg text-sm font-mono placeholder:text-slate-600 text-white"
-                        placeholder="Transmission Subject..." required>
-                </div>
-
-                <div class="relative">
-                    <select name="category"
-                        class="cyber-input w-full px-3 py-2.5 rounded-lg text-sm font-mono appearance-none cursor-pointer text-slate-300"
-                        required>
-                        <option value="" disabled selected class="bg-slate-900 text-slate-500">Select Classification
-                        </option>
-                        <option value="Startup Idea" class="bg-slate-900">Startup Idea</option>
-                        <option value="Hackathon Idea" class="bg-slate-900">Hackathon Idea</option>
-                        <option value="Research Idea" class="bg-slate-900">Research Idea</option>
-                        <option value="Social Impact Idea" class="bg-slate-900">Social Impact Idea</option>
-                    </select>
-                    <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-slate-500">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
-                            </path>
-                        </svg>
-                    </div>
-                </div>
-
-                <div>
-                    <textarea name="description"
-                        class="cyber-input w-full px-3 py-2.5 rounded-lg text-sm font-mono placeholder:text-slate-600 text-slate-300 min-h-[120px] resize-y"
-                        placeholder="Detail the concept architecture and required inputs..." required></textarea>
-                </div>
-
-                <div>
-                    <input type="text" name="skills"
-                        class="cyber-input w-full px-3 py-2.5 rounded-lg text-sm font-mono placeholder:text-slate-600 text-slate-300"
-                        placeholder="Signatures (comma sep)...">
-                </div>
-
-                <div class="relative">
-                    <select name="team_size"
-                        class="cyber-input w-full px-3 py-2.5 rounded-lg text-sm font-mono appearance-none cursor-pointer text-slate-300"
-                        required>
-                        <option value="" disabled selected class="bg-slate-900 text-slate-500">Max Node Capacity
-                        </option>
-                        <option value="2" class="bg-slate-900">2 Operatives</option>
-                        <option value="3" class="bg-slate-900">3 Operatives</option>
-                        <option value="4" class="bg-slate-900">4 Operatives</option>
-                        <option value="5" class="bg-slate-900">5 Operatives</option>
-                    </select>
-                    <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-slate-500">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
-                            </path>
-                        </svg>
-                    </div>
-                </div>
-
-                <button type="submit"
-                    class="w-full py-3 mt-2 rounded-xl bg-orange-500 hover:bg-orange-400 text-slate-900 font-bold uppercase tracking-widest text-sm transition-all duration-300 flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(249,115,22,0.4)] hover:shadow-[0_0_25px_rgba(249,115,22,0.6)]">
-                    <svg class="w-4 h-4 border-2 border-slate-900 rounded-full" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    Broadcast
-                </button>
-            </form>
-        </div>
-    </div>
-
+    </div><!-- end flex -->
 </div>
 
+{% block scripts %}
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const searchInput = document.getElementById('searchInput');
-        const cards = document.querySelectorAll('.card-item');
+    const searchInput = document.getElementById('searchInput');
+    const cards = document.querySelectorAll('.hackathon-card');
+    const noResults = document.getElementById('noResults');
 
-        if (searchInput) {
-            searchInput.addEventListener('input', (e) => {
-                const term = e.target.value.toLowerCase();
-                cards.forEach(card => {
-                    const searchData = card.getAttribute('data-search');
-                    if (searchData.includes(term)) {
-                        card.style.display = 'block';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-            });
-        }
+    searchInput && searchInput.addEventListener('input', function() {
+        const term = this.value.toLowerCase().trim();
+        let visible = 0;
+        cards.forEach(function(card) {
+            const match = !term || card.dataset.search.includes(term);
+            card.style.display = match ? '' : 'none';
+            if (match) visible++;
+        });
+        noResults.classList.toggle('hidden', visible > 0 || !term);
     });
 </script>
+{% endblock %}
+
 {% endblock %}

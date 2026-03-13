@@ -578,12 +578,15 @@ async def projects_get(request: Request, db: Session = Depends(get_db)):
     
     enriched_projects = []
     for proj in all_db_projects:
-        # Find creator name
-        creator_name = "Unknown Creator"
-        if proj.creator_id in dummy_profiles:
+        # Find creator name — check DB Profile first, then dummy_profiles, then derive from email
+        creator_name = proj.creator_id.split("@")[0].capitalize()
+        creator_user = db.query(models.User).filter(models.User.email == proj.creator_id).first()
+        if creator_user:
+            creator_prof = db.query(models.Profile).filter(models.Profile.user_id == creator_user.id).first()
+            if creator_prof:
+                creator_name = creator_prof.full_name
+        elif proj.creator_id in dummy_profiles:
             creator_name = dummy_profiles[proj.creator_id].get("full_name", creator_name)
-        elif proj.creator_id in dummy_users:
-             creator_name = proj.creator_id.split("@")[0].capitalize()
              
         # Fetch members
         db_members = db.query(models.ProjectMember).filter(models.ProjectMember.project_id == proj.project_id).all()
