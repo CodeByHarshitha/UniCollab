@@ -1,103 +1,205 @@
 {% extends "base.html" %}
 
-{% block title %}Request Uplink - UniCollab{% endblock %}
-{% block page_title %}Transmission Control{% endblock %}
+{% block title %}Requests — UniCollab{% endblock %}
+{% block page_title %}Requests{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto space-y-6">
+<div class="max-w-4xl mx-auto space-y-8">
 
-    <!-- Header & Navigation -->
-    <div class="glass-panel p-6 rounded-2xl relative overflow-hidden">
-        <div class="relative z-10">
-            <h2 class="text-2xl font-bold text-white mb-6">Comms Center</h2>
-
-            <div class="flex gap-2 border-b border-slate-700/50">
-                <a href="/requests"
-                    class="px-6 py-3 text-sm font-medium border-b-2 border-cyan-400 text-cyan-400 bg-cyan-500/5 rounded-t-lg transition-colors">
-                    Peer Links
-                </a>
-                <a href="/project-requests"
-                    class="px-6 py-3 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-300 hover:bg-white/5 rounded-t-lg transition-colors">
-                    Project Ops
-                </a>
-            </div>
-        </div>
+    <!-- Page Header -->
+    <div>
+        <h1 class="text-2xl font-bold text-white flex items-center gap-3">
+            <span class="inline-flex w-9 h-9 rounded-xl bg-rose-500/15 border border-rose-500/25 items-center justify-center shrink-0">
+                <svg class="w-5 h-5 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                </svg>
+            </span>
+            Requests
+            {% set total = incoming_project_requests|length + incoming_hackathon_requests|length %}
+            {% if total > 0 %}
+            <span class="inline-flex items-center justify-center min-w-[28px] h-7 px-2 rounded-full bg-rose-500 text-white text-xs font-bold shadow-lg shadow-rose-500/40">
+                {{ total }}
+            </span>
+            {% endif %}
+        </h1>
+        <p class="text-slate-400 text-sm mt-1 ml-12">All incoming join requests for your projects and hackathon teams.</p>
     </div>
 
-    <!-- Incoming Requests Section -->
-    <div>
-        <h3 class="text-lg font-bold text-slate-300 mb-4 flex items-center gap-2">
-            <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3">
-                </path>
-            </svg>
-            Inbound Transmissions
-        </h3>
+    <!-- ─── PROJECT REQUESTS BOX ─── -->
+    <section class="glass-panel rounded-2xl overflow-hidden border border-indigo-500/15">
 
-        {% if incoming_requests|length == 0 %}
-        <div class="glass-panel p-10 text-center rounded-2xl border-dashed border-2 border-slate-700/50">
-            <p class="text-slate-500 font-mono text-sm">No new handshakes detected. Signal clear.</p>
+        <!-- Box Header -->
+        <div class="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-indigo-500/5">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-indigo-500/15 border border-indigo-500/25 flex items-center justify-center">
+                    <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                    </svg>
+                </div>
+                <h2 class="text-base font-bold text-white">Project Requests</h2>
+            </div>
+            {% if incoming_project_requests|length > 0 %}
+            <span class="px-2.5 py-1 rounded-full bg-rose-500/15 border border-rose-500/25 text-rose-400 text-xs font-bold">
+                {{ incoming_project_requests|length }} pending
+            </span>
+            {% endif %}
         </div>
-        {% else %}
 
-        <div class="space-y-4">
-            {% for req in incoming_requests %}
-            <div
-                class="glass-panel p-6 rounded-xl border-l-4 border-l-indigo-500 bg-indigo-500/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-all hover:bg-white/5">
+        <!-- Request Items -->
+        <div class="divide-y divide-white/5">
+            {% if incoming_project_requests|length == 0 %}
+            <div class="px-6 py-10 text-center">
+                <p class="text-slate-500 text-sm">No pending project requests. All clear! ✓</p>
+            </div>
+            {% else %}
+            {% for req in incoming_project_requests %}
+            <div class="px-6 py-5 flex flex-col md:flex-row gap-5 items-start md:items-center hover:bg-white/[0.02] transition-colors">
 
-                <!-- Request Data -->
-                <div class="flex-1">
+                <!-- Requester Avatar -->
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-base shrink-0 shadow-[0_0_10px_rgba(99,102,241,0.2)]">
+                    {{ req.sender_name[0] | upper }}
+                </div>
 
-                    <p class="text-xs font-mono text-indigo-400 mb-1">Project: {{ req.project_title }}</p>
-
-                    <div class="flex items-center gap-3 mb-2">
-                        <span class="text-xl font-bold text-white">{{ req.sender_name }}</span>
+                <!-- Request Info -->
+                <div class="flex-1 min-w-0">
+                    <!-- Project label -->
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-xs font-mono text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded">{{ req.project_title }}</span>
                     </div>
-
-                    <div class="text-sm text-slate-400 space-y-1 mb-3">
-                        <p><span class="text-slate-500">Department:</span> {{ req.sender_department }}</p>
-                        <p><span class="text-slate-500">Year:</span> {{ req.sender_year }}</p>
-                    </div>
-
-                    <div class="flex flex-wrap gap-2 mb-2 items-center">
-                        <span class="text-xs text-slate-500 mr-1">Skills:</span>
+                    <!-- Name -->
+                    <h3 class="text-base font-bold text-white mb-1">{{ req.sender_name }}</h3>
+                    <!-- Dept + Year -->
+                    {% if req.sender_department != 'Unknown' or req.sender_year != 'Unknown' %}
+                    <p class="text-xs text-slate-400 mb-2">
+                        {{ req.sender_department }}{% if req.sender_year != 'Unknown' %} · {{ req.sender_year }}{% endif %}
+                    </p>
+                    {% endif %}
+                    <!-- Skills -->
+                    <div class="flex flex-wrap gap-1.5 items-center">
+                        <span class="text-xs text-slate-500">Skills:</span>
                         {% if req.sender_skills %}
                         {% for skill in req.sender_skills %}
-                        <span
-                            class="px-2 py-0.5 rounded text-[10px] bg-slate-800 border border-slate-700 text-slate-300 font-mono">{{
-                            skill }}</span>
+                        <span class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-[11px] text-slate-300">{{ skill.strip() }}</span>
                         {% endfor %}
                         {% else %}
-                        <span class="text-xs text-slate-600 italic">None specified</span>
+                        <span class="text-xs text-slate-600 italic">None listed</span>
                         {% endif %}
                     </div>
                 </div>
 
-                <!-- Action Controls -->
-                <div class="flex flex-row gap-3 shrink-0 w-full md:w-auto mt-4 md:mt-0">
+                <!-- Accept / Reject -->
+                <div class="flex gap-2 shrink-0 w-full md:w-auto">
                     <form action="/respond-project-request" method="POST" class="flex-1 md:flex-none">
                         <input type="hidden" name="request_id" value="{{ req.request_id }}">
                         <input type="hidden" name="action" value="accept">
                         <button type="submit"
-                            class="w-full px-5 py-2.5 rounded-lg bg-green-500/10 hover:bg-green-500/20 border border-green-500/30 text-green-400 text-sm font-bold transition-colors">
+                            class="w-full md:w-auto px-5 py-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 hover:text-emerald-300 text-xs font-bold uppercase tracking-wider transition-colors">
                             Accept
                         </button>
                     </form>
-
                     <form action="/respond-project-request" method="POST" class="flex-1 md:flex-none">
                         <input type="hidden" name="request_id" value="{{ req.request_id }}">
                         <input type="hidden" name="action" value="reject">
                         <button type="submit"
-                            class="w-full px-5 py-2.5 rounded-lg bg-slate-800/50 hover:bg-red-500/20 border border-slate-700 hover:border-red-500/30 text-slate-400 hover:text-red-400 text-sm font-bold transition-colors">
+                            class="w-full md:w-auto px-5 py-2 rounded-lg bg-slate-800 hover:bg-rose-500/10 border border-slate-700 hover:border-rose-500/30 text-slate-400 hover:text-rose-400 text-xs font-bold uppercase tracking-wider transition-colors">
                             Reject
                         </button>
                     </form>
                 </div>
+
             </div>
             {% endfor %}
+            {% endif %}
         </div>
-        {% endif %}
-    </div>
+    </section>
+
+    <!-- ─── HACKATHON REQUESTS BOX ─── -->
+    <section class="glass-panel rounded-2xl overflow-hidden border border-amber-500/15">
+
+        <!-- Box Header -->
+        <div class="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-amber-500/5">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-amber-500/15 border border-amber-500/25 flex items-center justify-center">
+                    <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                </div>
+                <h2 class="text-base font-bold text-white">Hackathon Requests</h2>
+            </div>
+            {% if incoming_hackathon_requests|length > 0 %}
+            <span class="px-2.5 py-1 rounded-full bg-rose-500/15 border border-rose-500/25 text-rose-400 text-xs font-bold">
+                {{ incoming_hackathon_requests|length }} pending
+            </span>
+            {% endif %}
+        </div>
+
+        <!-- Request Items -->
+        <div class="divide-y divide-white/5">
+            {% if incoming_hackathon_requests|length == 0 %}
+            <div class="px-6 py-10 text-center">
+                <p class="text-slate-500 text-sm">No pending hackathon requests. All clear! ✓</p>
+            </div>
+            {% else %}
+            {% for req in incoming_hackathon_requests %}
+            <div class="px-6 py-5 flex flex-col md:flex-row gap-5 items-start md:items-center hover:bg-white/[0.02] transition-colors">
+
+                <!-- Avatar -->
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-slate-900 font-bold text-base shrink-0 shadow-[0_0_10px_rgba(245,158,11,0.2)]">
+                    {{ req.sender_name[0] | upper }}
+                </div>
+
+                <!-- Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-xs font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">{{ req.hackathon_title }}</span>
+                    </div>
+                    <h3 class="text-base font-bold text-white mb-1">{{ req.sender_name }}</h3>
+                    {% if req.sender_department != 'Unknown' or req.sender_year != 'Unknown' %}
+                    <p class="text-xs text-slate-400 mb-2">
+                        {{ req.sender_department }}{% if req.sender_year != 'Unknown' %} · {{ req.sender_year }}{% endif %}
+                    </p>
+                    {% endif %}
+                    <div class="flex flex-wrap gap-1.5 items-center">
+                        <span class="text-xs text-slate-500">Skills:</span>
+                        {% if req.sender_skills %}
+                        {% for skill in req.sender_skills %}
+                        <span class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-[11px] text-slate-300">{{ skill.strip() }}</span>
+                        {% endfor %}
+                        {% else %}
+                        <span class="text-xs text-slate-600 italic">None listed</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Accept / Reject -->
+                <div class="flex gap-2 shrink-0 w-full md:w-auto">
+                    <form action="/respond-hackathon-request" method="POST" class="flex-1 md:flex-none">
+                        <input type="hidden" name="idea_id" value="{{ req.idea_id }}">
+                        <input type="hidden" name="requester_email" value="{{ req.sender_email }}">
+                        <input type="hidden" name="action" value="accept">
+                        <button type="submit"
+                            class="w-full md:w-auto px-5 py-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 hover:text-emerald-300 text-xs font-bold uppercase tracking-wider transition-colors">
+                            Accept
+                        </button>
+                    </form>
+                    <form action="/respond-hackathon-request" method="POST" class="flex-1 md:flex-none">
+                        <input type="hidden" name="idea_id" value="{{ req.idea_id }}">
+                        <input type="hidden" name="requester_email" value="{{ req.sender_email }}">
+                        <input type="hidden" name="action" value="reject">
+                        <button type="submit"
+                            class="w-full md:w-auto px-5 py-2 rounded-lg bg-slate-800 hover:bg-rose-500/10 border border-slate-700 hover:border-rose-500/30 text-slate-400 hover:text-rose-400 text-xs font-bold uppercase tracking-wider transition-colors">
+                            Reject
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+    </section>
 
 </div>
 {% endblock %}

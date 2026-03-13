@@ -23,15 +23,22 @@ templates = Jinja2Templates(directory="templates")
 # which is a logical place for utility functions related to DB access.
 
 def get_total_new_requests(db: Session, user_email: str) -> int:
-    """Gets the count of pending join requests for all projects created by the user."""
-    count = (
+    """Gets the count of ALL pending join requests — both project and hackathon — for this user."""
+    # Project requests (from DB)
+    project_count = (
         db.query(models.JoinRequest)
         .join(models.Project, models.JoinRequest.project_id == models.Project.project_id)
         .filter(models.Project.creator_id == user_email)
         .filter(models.JoinRequest.status == "pending")
         .count()
     )
-    return count
+    # Hackathon requests (from in-memory dummy_ideas — pending = in idea.members but not creator)
+    hackathon_count = sum(
+        1 for idea in dummy_ideas
+        if idea["creator_email"] == user_email
+        for member in idea.get("pending_members", [])
+    )
+    return project_count + hackathon_count
 
 @app.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
@@ -56,7 +63,7 @@ dummy_project_requests = [] # {"id": int, "project_id": int, "sender_email": str
 project_id_counter = 1
 project_request_id_counter = 1
 
-dummy_ideas = [] # {"id": int, "creator_email": str, "title": str, "category": str, "skills": list, "team_size": int, "description": str, "members": list[str]}
+dummy_ideas = [] # {"id": int, "creator_email": str, "title": str, "category": str, "skills": list, "team_size": int, "description": str, "members": list[str], "pending_members": list[str]}
 idea_id_counter = 1
 
 dummy_tasks = [] # {"id": int, "project_id": int, "title": str, "status": str} # statuses: "todo", "in_progress", "completed"
@@ -369,24 +376,23 @@ async def requests_get(request: Request, db: Session = Depends(get_db)):
     user_email = request.cookies.get("user_email")
     if not user_email or user_email not in dummy_users:
         return RedirectResponse(url="/login", status_code=303)
-        
-    # Aggregate all "pending" requests for projects created by this user
-    db_incoming_requests = (
+
+    # ── PROJECT REQUESTS (from DB) ──
+    db_project_requests = (
         db.query(models.JoinRequest, models.Project)
         .join(models.Project, models.JoinRequest.project_id == models.Project.project_id)
         .filter(models.Project.creator_id == user_email)
         .filter(models.JoinRequest.status == "pending")
         .all()
     )
-    
-    incoming_requests = []
-    for req, proj in db_incoming_requests:
+
+    incoming_project_requests = []
+    for req, proj in db_project_requests:
         sender_name = req.requester_id.split("@")[0].capitalize()
         sender_dept = "Unknown"
         sender_year = "Unknown"
         sender_skills = []
-        
-        # Check DB for Profile info
+
         sender_user = db.query(models.User).filter(models.User.email == req.requester_id).first()
         if sender_user:
             sender_prof = db.query(models.Profile).filter(models.Profile.user_id == sender_user.id).first()
@@ -395,17 +401,16 @@ async def requests_get(request: Request, db: Session = Depends(get_db)):
                 sender_dept = sender_prof.department
                 sender_year = sender_prof.year_of_study
                 if sender_prof.skills:
-                    sender_skills = sender_prof.skills.split(",")
-                    
-        # Fallback to dummy_profiles if DB profile is missing but they exist in dummy
+                    sender_skills = [s.strip() for s in sender_prof.skills.split(",") if s.strip()]
+
         if req.requester_id in dummy_profiles and sender_name == req.requester_id.split("@")[0].capitalize():
             prof = dummy_profiles[req.requester_id]
             sender_name = prof.get("full_name", sender_name)
             sender_dept = prof.get("department", sender_dept)
             sender_year = prof.get("year_of_study", sender_year)
             sender_skills = dummy_skills.get(req.requester_id, [])
-            
-        incoming_requests.append({
+
+        incoming_project_requests.append({
             "request_id": req.request_id,
             "project_title": proj.title,
             "sender_email": req.requester_id,
@@ -415,11 +420,43 @@ async def requests_get(request: Request, db: Session = Depends(get_db)):
             "sender_skills": sender_skills
         })
 
+    # ── HACKATHON REQUESTS (from in-memory dummy_ideas) ──
+    incoming_hackathon_requests = []
+    for idea in dummy_ideas:
+        if idea["creator_email"] != user_email:
+            continue
+        for pending_email in idea.get("pending_members", []):
+            sender_name = pending_email.split("@")[0].capitalize()
+            sender_dept = "Unknown"
+            sender_year = "Unknown"
+            sender_skills = []
+
+            sender_user = db.query(models.User).filter(models.User.email == pending_email).first()
+            if sender_user:
+                sender_prof = db.query(models.Profile).filter(models.Profile.user_id == sender_user.id).first()
+                if sender_prof:
+                    sender_name = sender_prof.full_name
+                    sender_dept = sender_prof.department
+                    sender_year = sender_prof.year_of_study
+                    if sender_prof.skills:
+                        sender_skills = [s.strip() for s in sender_prof.skills.split(",") if s.strip()]
+
+            incoming_hackathon_requests.append({
+                "idea_id": idea["id"],
+                "hackathon_title": idea["title"],
+                "sender_email": pending_email,
+                "sender_name": sender_name,
+                "sender_department": sender_dept,
+                "sender_year": sender_year,
+                "sender_skills": sender_skills
+            })
+
     return templates.TemplateResponse("requests.html", {
-        "request": request, 
+        "request": request,
         "email": user_email,
-        "incoming_requests": incoming_requests,
-        "total_new_requests": get_total_new_requests(db, user_email),
+        "incoming_project_requests": incoming_project_requests,
+        "incoming_hackathon_requests": incoming_hackathon_requests,
+        "total_new_requests": len(incoming_project_requests) + len(incoming_hackathon_requests),
         "active_page": "requests"
     })
 
@@ -848,23 +885,25 @@ async def my_hackathons_get(request: Request, db: Session = Depends(get_db)):
     if not user_email or user_email not in dummy_users:
         return RedirectResponse(url="/login", status_code=303)
 
-    # Filter only this user's hackathon posts
     my_ideas = [idea for idea in dummy_ideas if idea["creator_email"] == user_email]
     enriched = []
+    total_new = 0
     for idea in my_ideas:
+        pending = len(idea.get("pending_members", []))
+        total_new += pending
         enriched.append({
             **idea,
             "creator_name": user_email.split("@")[0].capitalize(),
-            "members_count": len(idea["members"])
+            "members_count": len(idea["members"]),
+            "join_requests": pending
         })
 
-    return templates.TemplateResponse("ideas.html", {
+    return templates.TemplateResponse("my_hackathons.html", {
         "request": request,
         "email": user_email,
         "ideas": enriched,
         "total_new_requests": get_total_new_requests(db, user_email),
-        "active_page": "my_hackathons",
-        "my_hackathons_view": True
+        "active_page": "my_hackathons"
     })
 
 @app.post("/create-idea")
@@ -889,7 +928,8 @@ async def create_idea_post(request: Request):
         "skills": skills_list,
         "team_size": int(form_data.get("team_size", 4)),
         "description": form_data.get("description"),
-        "members": [user_email]
+        "members": [user_email],
+        "pending_members": []  # tracks join requests awaiting acceptance
     }
     dummy_ideas.append(new_idea)
     idea_id_counter += 1
@@ -901,14 +941,40 @@ async def join_idea_post(request: Request, idea_id: int = Form(...)):
     user_email = request.cookies.get("user_email")
     if not user_email or user_email not in dummy_users:
         return RedirectResponse(url="/login", status_code=303)
-        
+
     for idea in dummy_ideas:
         if idea["id"] == idea_id:
-             if len(idea["members"]) < idea["team_size"] and user_email not in idea["members"]:
-                 idea["members"].append(user_email)
-             break
-             
-    return RedirectResponse(url="/ideas", status_code=303)
+            # Don't let creator or existing members/pending re-request
+            if (user_email != idea["creator_email"]
+                    and user_email not in idea["members"]
+                    and user_email not in idea.get("pending_members", [])
+                    and len(idea["members"]) < idea["team_size"]):
+                idea.setdefault("pending_members", []).append(user_email)
+            break
+
+    return RedirectResponse(url="/hackathon-feed", status_code=303)
+
+@app.post("/respond-hackathon-request")
+async def respond_hackathon_request(
+    request: Request,
+    idea_id: int = Form(...),
+    requester_email: str = Form(...),
+    action: str = Form(...)  # 'accept' or 'reject'
+):
+    user_email = request.cookies.get("user_email")
+    if not user_email or user_email not in dummy_users:
+        return RedirectResponse(url="/login", status_code=303)
+
+    for idea in dummy_ideas:
+        if idea["id"] == idea_id and idea["creator_email"] == user_email:
+            pending = idea.get("pending_members", [])
+            if requester_email in pending:
+                pending.remove(requester_email)
+                if action == "accept" and len(idea["members"]) < idea["team_size"]:
+                    idea["members"].append(requester_email)
+            break
+
+    return RedirectResponse(url="/requests", status_code=303)
 
 @app.get("/workspace/{project_id}", response_class=HTMLResponse)
 async def workspace_get(request: Request, project_id: int, db: Session = Depends(get_db)):
