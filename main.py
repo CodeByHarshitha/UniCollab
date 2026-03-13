@@ -807,7 +807,61 @@ async def ideas_get(request: Request, db: Session = Depends(get_db)):
         "email": user_email,
         "ideas": enriched_ideas,
         "total_new_requests": get_total_new_requests(db, user_email),
-        "active_page": "ideas"
+        "active_page": "hackathon_feed"
+    })
+
+# /hackathon-feed is the canonical URL for the hackathon board
+@app.get("/hackathon-feed", response_class=HTMLResponse)
+async def hackathon_feed_get(request: Request, db: Session = Depends(get_db)):
+    user_email = request.cookies.get("user_email")
+    if not user_email or user_email not in dummy_users:
+        return RedirectResponse(url="/login", status_code=303)
+
+    enriched_ideas = []
+    for idea in dummy_ideas:
+        creator_name = "Unknown Creator"
+        if idea["creator_email"] in dummy_profiles:
+            creator_name = dummy_profiles[idea["creator_email"]].get("full_name", creator_name)
+        elif idea["creator_email"] in dummy_users:
+            creator_name = idea["creator_email"].split("@")[0].capitalize()
+
+        enriched_ideas.append({
+            **idea,
+            "creator_name": creator_name,
+            "members_count": len(idea["members"])
+        })
+
+    return templates.TemplateResponse("ideas.html", {
+        "request": request,
+        "email": user_email,
+        "ideas": enriched_ideas,
+        "total_new_requests": get_total_new_requests(db, user_email),
+        "active_page": "hackathon_feed"
+    })
+
+@app.get("/my-hackathons", response_class=HTMLResponse)
+async def my_hackathons_get(request: Request, db: Session = Depends(get_db)):
+    user_email = request.cookies.get("user_email")
+    if not user_email or user_email not in dummy_users:
+        return RedirectResponse(url="/login", status_code=303)
+
+    # Filter only this user's hackathon posts
+    my_ideas = [idea for idea in dummy_ideas if idea["creator_email"] == user_email]
+    enriched = []
+    for idea in my_ideas:
+        enriched.append({
+            **idea,
+            "creator_name": user_email.split("@")[0].capitalize(),
+            "members_count": len(idea["members"])
+        })
+
+    return templates.TemplateResponse("ideas.html", {
+        "request": request,
+        "email": user_email,
+        "ideas": enriched,
+        "total_new_requests": get_total_new_requests(db, user_email),
+        "active_page": "my_hackathons",
+        "my_hackathons_view": True
     })
 
 @app.post("/create-idea")
@@ -837,7 +891,7 @@ async def create_idea_post(request: Request):
     dummy_ideas.append(new_idea)
     idea_id_counter += 1
     
-    return RedirectResponse(url="/ideas", status_code=303)
+    return RedirectResponse(url="/hackathon-feed", status_code=303)
 
 @app.post("/join-idea")
 async def join_idea_post(request: Request, idea_id: int = Form(...)):
